@@ -10,6 +10,7 @@ __pycache__/
 *.log
 db.sqlite3
 media
+static/published_datasets
 
 # Virtual environment
 .venv
