@@ -3,10 +3,10 @@ version: '3.9'
 services:
   web:
     build: .
-    command: python /code/manage.py runserver 0.0.0.0:8000
+    command: python /app/manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code
-      - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/published_datasets
+      - .:/app
+      - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/app/published_datasets
     ports:
       - 8000:8000
     depends_on:
@@ -21,8 +21,8 @@ services:
     build: .
     command: celery -A django_project worker --loglevel=info  
     volumes:
-      - .:/code  # Change this to match your Django project path if different
-      - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/published_datasets
+      - .:/app  # Change this to match your Django project path if different
+      - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/app/published_datasets
     depends_on:
       - db  
       - redis
