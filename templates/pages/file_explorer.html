@@ -4,9 +4,13 @@
     <title>File Explorer</title>
 </head>
 <body>
+    {% if empty_directory %}
+        <p>This directory is empty.</p>
+    {% else %}
     <h1>File Explorer</h1>
-
+    
     <h2>Directories</h2>
+    
     <ul>
         {% for directory in directories %}
             <li><a href="{% url 'file_explorer' path=path|add:directory|add:'/' %}">{{ directory }}/</a></li>
@@ -19,5 +23,6 @@
             <li><a href="{% url 'file_explorer' path=path|add:file %}">{{ file }}</a></li>
         {% endfor %}
     </ul>
+    {% endif %}
 </body>
 </html>
