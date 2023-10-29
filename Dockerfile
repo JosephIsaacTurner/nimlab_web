@@ -6,8 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Create and set work directory
-RUN mkdir -p /code
-WORKDIR /code
+RUN mkdir -p /app
+WORKDIR /app
 
 # Install dependencies
 COPY requirements.txt /tmp/requirements.txt
@@ -18,7 +18,7 @@ RUN set -ex && \
     rm -rf /root/.cache/
 
 # Copy local project
-COPY . /code/
+COPY . /app/
 
 # Expose port 8000
 EXPOSE 8000
