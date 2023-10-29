@@ -1,5 +1,6 @@
 from pathlib import Path
-
+import os
+import socket
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -89,6 +90,12 @@ DATABASES = {
 #         "PORT": 5432,  # default postgres port
 #     }
 # }
+CELERY_BROKER_URL, CELERY_RESULT_BACKEND = (
+    (f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0", f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0") 
+    if os.environ.get('REDIS_HOST') and os.environ.get('REDIS_PORT') 
+    else ('redis://localhost:6379/0', 'redis://localhost:6379/0')
+)
+CELERY_ACCEPT_CONTENT, CELERY_TASK_SERIALIZER, CELERY_RESULT_SERIALIZER, CELERY_TIMEZONE = ['json'], 'json', 'json', 'UTC'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -151,7 +158,17 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # django-debug-toolbar
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
 # https://docs.djangoproject.com/en/dev/ref/settings/#internal-ips
-INTERNAL_IPS = ["127.0.0.1"]
+
+# Detect if running in Docker
+is_docker = os.environ.get('RUNNING_IN_DOCKER', False)
+
+if is_docker:
+    # Code to set INTERNAL_IPS when running inside Docker
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
+else:
+    # Code to set INTERNAL_IPS when running locally
+    INTERNAL_IPS = ["127.0.0.1"]
 
 # https://docs.djangoproject.com/en/dev/topics/auth/customizing/#substituting-a-custom-user-model
 AUTH_USER_MODEL = "accounts.CustomUser"
