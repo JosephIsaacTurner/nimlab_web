@@ -4,7 +4,8 @@ from django.http import FileResponse, Http404
 from django.shortcuts import render
 
 def file_explorer(request, path=''):
-    base_dir = os.path.join(settings.STATICFILES_DIRS[0], 'published_datasets')
+    root_dir = 'published_datasets'
+    base_dir = os.path.join(settings.STATICFILES_DIRS[0], root_dir)
 
     # Full path to the directory or file
     full_path = os.path.join(base_dir, path)
@@ -30,9 +31,13 @@ def file_explorer(request, path=''):
             directories.append(entry)
 
     empty_directory = not files and not directories
-
+    context = {
+        'display_path': path if path and path.strip() else root_dir,
+        'path': path, 'files': files, 'directories': directories, 'empty_directory': empty_directory, 
+        'root_dir': root_dir
+    }
     return render(
         request,
         'pages/file_explorer.html',
-        {'path': path, 'files': files, 'directories': directories, 'empty_directory': empty_directory}
+        context
     )
