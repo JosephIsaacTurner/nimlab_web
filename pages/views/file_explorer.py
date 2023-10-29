@@ -12,8 +12,16 @@ def file_explorer(request, path=''):
 
     # Check if the path actually exists
     if not os.path.exists(full_path):
-        raise Http404("File or directory not found")
-
+        context = {
+            'display_path': path if path and path.strip() else root_dir,
+            'path': path, 'empty_directory': True, 
+            'root_dir': root_dir
+        }
+        return render(
+                request,
+                'pages/file_explorer.html',
+                context
+            )
     # Check if the path is a file
     if os.path.isfile(full_path):
         return FileResponse(open(full_path, 'rb'))

@@ -8,6 +8,8 @@
   <img src="{% static 'images/lab_logo1.png' %}" class="img-fluid" alt="lab logo"/>
 </div>
   {% if empty_directory %}
+    <p class="lead">Root Directory: <a href="{% url 'file_explorer' %}">{{ root_dir }}/</a></p>
+    <p class="lead">Working Directory: {{ display_path }}</p>
     <p>This directory is empty.</p>
     {% else %}
     <hr>
@@ -15,7 +17,7 @@
         
         <h2 class="text-center mx-auto lead display-6">Dataset File Explorer</h2>
         <p class="lead">Root Directory: <a href="{% url 'file_explorer' %}">{{ root_dir }}/</a></p>
-        <p class="lead">Current Working Directory: {{ display_path }}</p>
+        <p class="lead">Working Directory: {{ display_path }}</p>
 
         <p class="h3">Files:</p>
         <ul>
