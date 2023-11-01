@@ -86,8 +86,8 @@ DATABASES = {
         "NAME": "dataset_metadata",
         "USER": "username",
         "PASSWORD": "password",
-        "HOST": "192.168.32.2",  # set in docker-compose.yml
-        "PORT": 5433,  # default postgres port
+        "HOST": "192.168.32.2",  # is the ip address of the container running postgres
+        "PORT": 5435,  # is this right? Or should it be 5433?
     }
 }
 CELERY_BROKER_URL, CELERY_RESULT_BACKEND = (
