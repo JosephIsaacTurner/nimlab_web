@@ -40,7 +40,5 @@ services:
       - nimlab_docker_network  # Connecting to the custom network
 
 networks:
-  default:
-    external:
-      name: nimlab_docker_network
-
+  nimlab_docker_network:
+    external: true
