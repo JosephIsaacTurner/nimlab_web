@@ -86,7 +86,7 @@ DATABASES = {
         "NAME": "dataset_metadata",
         "USER": "username",
         "PASSWORD": "password",
-        "HOST": "localhost",  # set in docker-compose.yml
+        "HOST": "192.168.32.2",  # set in docker-compose.yml
         "PORT": 5433,  # default postgres port
     }
 }
