@@ -10,7 +10,6 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
       - redis 
     environment:
       - REDIS_HOST=redis
@@ -24,7 +23,6 @@ services:
       - .:/app  # Change this to match your Django project path if different
       - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/app/static/published_datasets
     depends_on:
-      - db  
       - redis
     environment:
       - REDIS_HOST=redis
