@@ -86,10 +86,11 @@ DATABASES = {
         "NAME": "dataset_metadata",
         "USER": "username",
         "PASSWORD": "password",
-        "HOST": "192.168.32.2",  # is the ip address of the container running postgres
-        "PORT": 5435,  # is this right? Or should it be 5433?
+        "HOST": "postgres",  # Using service name of the postgres container from the docker-compose
+        "PORT": 5432,  # Inside the Docker network, you will connect to the original port of the Postgres container
     }
 }
+
 CELERY_BROKER_URL, CELERY_RESULT_BACKEND = (
     (f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0", f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0") 
     if os.environ.get('REDIS_HOST') and os.environ.get('REDIS_PORT') 
