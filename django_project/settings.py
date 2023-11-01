@@ -72,24 +72,24 @@ TEMPLATES = [
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-# For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "postgres",
-#         "USER": "postgres",
-#         "PASSWORD": "postgres",
-#         "HOST": "db",  # set in docker-compose.yml
-#         "PORT": 5432,  # default postgres port
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+# For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "dataset_metadata",
+        "USER": "username",
+        "PASSWORD": "password",
+        "HOST": "localhost",  # set in docker-compose.yml
+        "PORT": 5433,  # default postgres port
+    }
+}
 CELERY_BROKER_URL, CELERY_RESULT_BACKEND = (
     (f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0", f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0") 
     if os.environ.get('REDIS_HOST') and os.environ.get('REDIS_PORT') 
