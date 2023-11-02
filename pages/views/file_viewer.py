@@ -28,7 +28,7 @@ def file_viewer(request, path=''):
         if prev_extension == ".nii":
             is_nifti = True
 
-    file_path = os.path.join(root_dir, path)
+    # file_path = os.path.join(root_dir, path)
     context = {
         "message": "hello world",
         "file_type": file_extension,
