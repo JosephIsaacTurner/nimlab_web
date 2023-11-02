@@ -39,14 +39,7 @@
 {% endblock %} -->
 {% block content %}
 
-<!-- <div class="row align-items-center"> 
-    <div class="col col-sm-9 my-auto">
-    </div>
-    <div class="col col-sm-3 btn-group" role="group"> 
-        <a href="{% url 'list' %}" class="btn btn-primary">Return to List</a>
-        <a href="{% url 'predict' %}" class="btn btn-success">New Prediction</a>
-    </div>
-</div> -->
+
 
 
 <hr>
@@ -72,7 +65,6 @@
                 const x = document.getElementById('findX').value;
                 const y = document.getElementById('findY').value;
                 const z = document.getElementById('findZ').value;
-                const baseUrl = "{% url 'locations' '0_0_0' %}"; // using dummy values just to get the base path
                 const targetUrl = baseUrl.replace('0_0_0', `${x}_${y}_${z}`);
                 window.location.href = targetUrl;
             }
@@ -112,7 +104,6 @@
                                     <a href="{{ MEDIA_URL }}{{ row.sensitivity_parametric_path }}"><i class="bi bi-download"></i></a>                                  
                                 </td>
                                 <td>
-                                    <a target="_blank" href="{% url 'symptom_detail' row.symptom %}">{{ row.symptom }}</a>
                                 </td>
                                 <td>
                                     {{row.average_overlap}}
@@ -170,14 +161,12 @@
                                                 <a href="{{ MEDIA_URL }}{{ case.network_file_name }}"><i class="bi bi-download"></i></a>                                  
                                             </td>
                                             <td>
-                                                <a target="_blank" href="{% url 'symptom_detail' case.symptom %}">{{ case.symptom }}</a>
                                             </td>
                                             <td>
                                                 {{case.value}}
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                                    <a target="_blank" href="{% url 'cases_single' case.lesion_id %}" class="btn btn-primary btn-sm">Full Details</a>
                                                 </div>
                                             </td>
                                             
