@@ -27,7 +27,7 @@ def file_viewer(request, path=''):
         _, prev_extension = os.path.splitext(os.path.splitext(file_path)[0])
         if prev_extension == ".nii":
             is_nifti = True
-
+    file_path = file_path.replace("/app/","")
     # file_path = os.path.join(root_dir, path)
     context = {
         "message": "hello world",
