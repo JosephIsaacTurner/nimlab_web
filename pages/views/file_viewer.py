@@ -32,7 +32,7 @@ def file_viewer(request, path=''):
     context = {
         "message": "hello world",
         "file_type": file_extension,
-        "file_path": path,
+        "file_path": file_path,
         "is_nifti": is_nifti
     }
 
