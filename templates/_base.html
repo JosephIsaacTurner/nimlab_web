@@ -18,6 +18,11 @@
 
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   {% endblock %}
+
+  {% block style %}
+  {% endblock %}
+  {% block header_links %}
+  {% endblock %}
 </head>
 
 <body>
@@ -83,6 +88,9 @@
   <script src="{% static 'js/base.js' %}"></script>
 
   {% endblock javascript %}
+
+  {% block script %}
+  {% endblock script %}
 
 </body>
 
