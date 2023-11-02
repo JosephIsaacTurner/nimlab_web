@@ -22,7 +22,7 @@
         <p class="h3">Files:</p>
         <ul>
         {% for file in files %}
-            <li><a href="{% url 'file_explorer' path=path|add:file %}">{{ file }}</a></li>
+            <li><a href="{% url 'file_viewer' path=path|add:file %}">{{ file }}</a></li>
         {% endfor %}
         </ul>
 

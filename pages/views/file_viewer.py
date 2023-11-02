@@ -7,6 +7,8 @@ from django.http import Http404
 from django.conf import settings
 from django.shortcuts import render
 
+from django.shortcuts import redirect
+
 def file_viewer(request, path=''):
     root_dir = 'published_datasets'
     base_dir = os.path.join(settings.STATICFILES_DIRS[0], root_dir)
@@ -27,8 +29,12 @@ def file_viewer(request, path=''):
         _, prev_extension = os.path.splitext(os.path.splitext(file_path)[0])
         if prev_extension == ".nii":
             is_nifti = True
-    file_path = file_path.replace("/app/","")
-    # file_path = os.path.join(root_dir, path)
+
+    if not is_nifti:
+        # Redirect to file_explorer with the path
+        return redirect('file_explorer', path=path)
+
+    file_path = file_path.replace("/app/", "")
     context = {
         "message": "hello world",
         "file_type": file_extension,
