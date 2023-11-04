@@ -1,23 +1,33 @@
 version: '3.9'
 
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d  # Mount custom Nginx configuration directory
+      - /volume1/dataset_imports:/app/static/published_datasets
+      # Mount the static volume directly into Nginx to serve static content
+    depends_on:
+      - web
+    networks:
+      - nimlab_docker_network
+
   web:
     build: .
-    command: python /app/manage.py runserver 0.0.0.0:8000
+    command: gunicorn django_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
       - /volume1/dataset_imports:/app/static/published_datasets
-      # - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/app/static/published_datasets
-    ports:
-      - 8000:8000
-    depends_on:
-      - redis 
+    networks:
+      - nimlab_docker_network
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - RUNNING_IN_DOCKER=True
-    networks:
-      - nimlab_docker_network  # Connecting to the custom network
+    depends_on:
+      - redis
 
   celery_worker:
     build: .

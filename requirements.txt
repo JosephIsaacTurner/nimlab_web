@@ -26,3 +26,4 @@ urllib3==1.26.14
 whitenoise==6.5.0
 celery
 redis
+gunicorn
