@@ -8,6 +8,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d  # Mount custom Nginx configuration directory
       - /volume1/dataset_imports:/app/static/published_datasets
+      - /volume1/docker/app_source/nimlab_web/static:/app/static
       # Mount the static volume directly into Nginx to serve static content
     depends_on:
       - web
