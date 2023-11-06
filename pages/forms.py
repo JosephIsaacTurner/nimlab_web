@@ -21,7 +21,7 @@ class DatasetSearchForm(forms.Form):
     creation_date = forms.CharField(required=False)
     comments = forms.CharField(required=False)
     tag = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.distinct(),
+        queryset=Tag.objects.all().order_by('tag').distinct('tag'),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Tags"
