@@ -1,5 +1,5 @@
-{% with unique_id=prefix|add:forloop.counter|stringformat:"s" %}
-  {% for directory, sub_contents in contents.directories.items %}
+{% for directory, sub_contents in contents.directories.items %}
+  {% with unique_id=path|add:directory|slugify %}
     <div class="accordion" id="accordion{{ unique_id }}">
       <div class="accordion-item">
         <h2 class="accordion-header" id="heading{{ unique_id }}">
@@ -27,5 +27,5 @@
         </div>
       </div>
     </div>
-  {% endfor %}
 {% endwith %}
+{% endfor %}
