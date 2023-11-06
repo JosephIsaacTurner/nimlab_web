@@ -6,8 +6,8 @@ from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo,
 
 class DatasetSearchForm(forms.Form):
     dataset_name = forms.CharField(required=False)
-    bids_version = forms.CharField(required=False)
-    dataset_type = forms.CharField(required=False)
+    BIDSVersion = forms.CharField(required=False)
+    DatasetType = forms.CharField(required=False)
     creation_date = forms.CharField(required=False)
     comments = forms.CharField(required=False)
     tag = forms.CharField(required=False)
@@ -27,8 +27,8 @@ class DatasetSearchForm(forms.Form):
             datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         if self.cleaned_data['BIDSVersion']:
             datasets = datasets.filter(BIDSVersion__icontains=self.cleaned_data['BIDSVersion'])
-        if self.cleaned_data['dataset_type']:
-            datasets = datasets.filter(dataset_type__icontains=self.cleaned_data['dataset_type'])
+        if self.cleaned_data['DatasetType']:
+            datasets = datasets.filter(DatasetType__icontains=self.cleaned_data['DatasetType'])
         if self.cleaned_data['creation_date']:
             datasets = datasets.filter(creation_date__icontains=self.cleaned_data['creation_date'])
         if self.cleaned_data['comments']:
