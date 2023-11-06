@@ -61,9 +61,9 @@ class DatasetSearchForm(forms.Form):
         if self.cleaned_data['dataset_id']:
             ids_query = Q(id__in=self.cleaned_data['dataset_id'])
             datasets = datasets.filter(ids_query)
-        if self.cleaned_data['dataset_path']:
-            directory_paths_query = Q(directory_path__in=self.cleaned_data['dataset_path'])
-            datasets = datasets.filter(directory_paths_query)
+        # if self.cleaned_data['dataset_path']:
+        #     directory_paths_query = Q(directory_path__in=self.cleaned_data['dataset_path'])
+        #     datasets = datasets.filter(directory_paths_query)
         # if self.cleaned_data['dataset_name']:
         #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         # if self.cleaned_data['BIDSVersion']:
@@ -73,6 +73,11 @@ class DatasetSearchForm(forms.Form):
             for dataset_type in self.cleaned_data['DatasetType']:
                 dataset_type_query |= Q(DatasetType=dataset_type)
             datasets = datasets.filter(dataset_type_query)
+        if self.cleaned_data['dataset_path']:
+            directory_paths_query = Q()
+            for directory_path in self.cleaned_data['dataset_path']:
+                directory_paths_query |= Q(directory_path=directory_path)
+            datasets = datasets.filter(directory_paths_query)
         # if self.cleaned_data['creation_date']:
         #     datasets = datasets.filter(creation_date__icontains=self.cleaned_data['creation_date'])
         if self.cleaned_data['comments']:
