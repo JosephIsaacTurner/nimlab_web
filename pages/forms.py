@@ -39,16 +39,16 @@ class DatasetSearchForm(forms.Form):
         label="Contact Email"
     )
     citation = forms.CharField(required=False)
-    path = forms.CharField(required=False)
-    type = forms.ModelMultipleChoiceField(
-        queryset=NiftiImage.objects.values_list('type', flat=True).distinct(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label="Type"
-    )
-    md5 = forms.CharField(required=False)
-    roi_size = forms.IntegerField(required=False)
-    mask = forms.CharField(required=False)
+    # path = forms.CharField(required=False)
+    # type = forms.ModelMultipleChoiceField(
+    #     queryset=NiftiImage.objects.values_list('type', flat=True).distinct(),
+    #     widget=forms.CheckboxSelectMultiple,
+    #     required=False,
+    #     label="Type"
+    # )
+    # md5 = forms.CharField(required=False)
+    # roi_size = forms.IntegerField(required=False)
+    # mask = forms.CharField(required=False)
 
     def search(self):
         datasets = Dataset.objects.all()
@@ -88,15 +88,15 @@ class DatasetSearchForm(forms.Form):
                 contact_email_query |= Q(contacts__in=[contact_email])
             datasets = datasets.filter(contact_email_query)
 
-        if self.cleaned_data['path']:
-            datasets = datasets.filter(nifti_images__path__icontains=self.cleaned_data['path'])
-        if self.cleaned_data['type']:
-            datasets = datasets.filter(nifti_images__type__icontains=self.cleaned_data['type'])
-        if self.cleaned_data['md5']:
-            datasets = datasets.filter(nifti_images__md5__icontains=self.cleaned_data['md5'])
-        if self.cleaned_data['roi_size'] is not None:
-            datasets = datasets.filter(nifti_images__roi_size=self.cleaned_data['roi_size'])
-        if self.cleaned_data['mask']:
-            datasets = datasets.filter(nifti_images__mask__icontains=self.cleaned_data['mask'])
+        # if self.cleaned_data['path']:
+        #     datasets = datasets.filter(nifti_images__path__icontains=self.cleaned_data['path'])
+        # if self.cleaned_data['type']:
+        #     datasets = datasets.filter(nifti_images__type__icontains=self.cleaned_data['type'])
+        # if self.cleaned_data['md5']:
+        #     datasets = datasets.filter(nifti_images__md5__icontains=self.cleaned_data['md5'])
+        # if self.cleaned_data['roi_size'] is not None:
+        #     datasets = datasets.filter(nifti_images__roi_size=self.cleaned_data['roi_size'])
+        # if self.cleaned_data['mask']:
+        #     datasets = datasets.filter(nifti_images__mask__icontains=self.cleaned_data['mask'])
 
         return datasets.distinct()
