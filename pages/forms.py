@@ -21,19 +21,19 @@ class DatasetSearchForm(forms.Form):
     creation_date = forms.CharField(required=False)
     comments = forms.CharField(required=False)
     tag = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.all(),
+        queryset=Tag.objects.distinct(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Tags"
     )
     author_email = forms.ModelMultipleChoiceField(
-        queryset=Author.objects.all(),
+        queryset=Author.objects.distinct(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Author Email"
     )
     contact_email = forms.ModelMultipleChoiceField(
-        queryset=Contact.objects.all(),
+        queryset=Contact.objects.distinct(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Contact Email"
