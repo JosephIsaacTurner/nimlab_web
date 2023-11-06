@@ -12,7 +12,7 @@ class Dataset(models.Model):
         db_table = 'datasets'
 
     def __str__(self):
-        return self.name
+        return self.dataset_name
 
 class Tag(models.Model):
     tag = models.CharField(max_length=255, blank=True, null=True)
