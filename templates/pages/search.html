@@ -1,4 +1,7 @@
 {% load crispy_forms_tags %}
+{% extends '_base.html' %}
+
+{% block content %}
 
 <form method="get">
     {{ form|crispy }}
@@ -12,3 +15,5 @@
         {% endfor %}
     </ul>
 {% endif %}
+
+{% endblock %}
