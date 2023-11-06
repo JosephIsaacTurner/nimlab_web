@@ -24,7 +24,7 @@ class DatasetSearchForm(forms.Form):
         datasets = Dataset.objects.all()
 
         if self.cleaned_data['dataset_name']:
-            datasets = datasets.filter(name__icontains=self.cleaned_data['dataset_name'])
+            datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         if self.cleaned_data['bids_version']:
             datasets = datasets.filter(bids_version__icontains=self.cleaned_data['bids_version'])
         if self.cleaned_data['dataset_type']:
