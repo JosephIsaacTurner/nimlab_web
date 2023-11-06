@@ -55,12 +55,15 @@ def get_directory_contents(path):
                     # append file name
                     contents['files'].append(entry.name)
                 elif entry.is_dir():
+                    # Ensure directory names end with a '/'
+                    dir_name = entry.name if entry.name.endswith('/') else entry.name + '/'
                     # recurse into directory
-                    contents['directories'][entry.name] = get_directory_contents(entry.path)
+                    contents['directories'][dir_name] = get_directory_contents(entry.path)
     except PermissionError:
         # Handle any permissions errors
         pass
     return contents
+
 
 def file_explorer(request, path=''):
     root_dir = 'published_datasets'
