@@ -11,4 +11,4 @@ def search_datasets(request):
         if form.is_valid():
             results = form.search()  # Get the search results if the form is valid
 
-    return render(request, 'search.html', {'form': form, 'results': results})
+    return render(request, 'pages/search.html', {'form': form, 'results': results})
