@@ -1,0 +1,13 @@
+<!-- search.html -->
+<form method="get">
+    {{ form.as_p }}
+    <input type="submit" value="Search">
+</form>
+
+{% if results %}
+    <ul>
+        {% for dataset in results %}
+            <li>{{ dataset.name }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
