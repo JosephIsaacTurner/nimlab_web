@@ -80,8 +80,8 @@ class DatasetSearchForm(forms.Form):
             for author_email in self.cleaned_data['author_email']:
                 author_email_query |= Q(authors__in=[author_email])
             datasets = datasets.filter(author_email_query)
-        if self.cleaned_data['contact_email']:
-            datasets = datasets.filter(contacts__contact_email__icontains=self.cleaned_data['contact_email'])
+        # if self.cleaned_data['contact_email']:
+        #     datasets = datasets.filter(contacts__contact_email__icontains=self.cleaned_data['contact_email'])
         if self.cleaned_data['contact_email']:
             contact_email_query = Q()
             for contact_email in self.cleaned_data['contact_email']:
