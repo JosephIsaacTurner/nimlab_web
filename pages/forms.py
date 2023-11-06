@@ -11,14 +11,14 @@ class DatasetSearchForm(forms.Form):
         required=False,
         label="Dataset Name"
     )
-    BIDSVersion = forms.CharField(required=False)
+    # BIDSVersion = forms.CharField(required=False)
     DatasetType = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.values_list('DatasetType', flat=True).distinct(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Dataset Type"
     )
-    creation_date = forms.CharField(required=False)
+    # creation_date = forms.CharField(required=False)
     comments = forms.CharField(required=False)
     tag = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all().order_by('tag').distinct('tag'),
@@ -57,15 +57,15 @@ class DatasetSearchForm(forms.Form):
             datasets = datasets.filter(ids_query)
         # if self.cleaned_data['dataset_name']:
         #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
-        if self.cleaned_data['BIDSVersion']:
-            datasets = datasets.filter(BIDSVersion__icontains=self.cleaned_data['BIDSVersion'])
+        # if self.cleaned_data['BIDSVersion']:
+        #     datasets = datasets.filter(BIDSVersion__icontains=self.cleaned_data['BIDSVersion'])
         if self.cleaned_data['DatasetType']:
             dataset_type_query = Q()
             for dataset_type in self.cleaned_data['DatasetType']:
                 dataset_type_query |= Q(DatasetType=dataset_type)
             datasets = datasets.filter(dataset_type_query)
-        if self.cleaned_data['creation_date']:
-            datasets = datasets.filter(creation_date__icontains=self.cleaned_data['creation_date'])
+        # if self.cleaned_data['creation_date']:
+        #     datasets = datasets.filter(creation_date__icontains=self.cleaned_data['creation_date'])
         if self.cleaned_data['comments']:
             datasets = datasets.filter(comments__icontains=self.cleaned_data['comments'])
 

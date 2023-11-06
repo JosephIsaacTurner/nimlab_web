@@ -38,6 +38,8 @@ class Contact(models.Model):
 
     class Meta:
         db_table = 'contacts'
+    def __str__(self):
+        return self.contact_email
 
 class CitationSrc(models.Model):
     citation = models.TextField()
@@ -45,6 +47,8 @@ class CitationSrc(models.Model):
 
     class Meta:
         db_table = 'citations_src'
+    def __str__(self):
+        return self.citation
 
 class CitationTo(models.Model):
     citation = models.TextField()
