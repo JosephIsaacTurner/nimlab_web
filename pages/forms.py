@@ -52,9 +52,10 @@ class DatasetSearchForm(forms.Form):
 
     def search(self):
         datasets = Dataset.objects.all()
-
-        if self.cleaned_data['dataset_name']:
-            datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
+        if self.cleaned_data['dataset_id']:
+            datasets = datasets.filter(dataset_id__icontains=self.cleaned_data['dataset_id'])
+        # if self.cleaned_data['dataset_name']:
+        #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         if self.cleaned_data['BIDSVersion']:
             datasets = datasets.filter(BIDSVersion__icontains=self.cleaned_data['BIDSVersion'])
         if self.cleaned_data['DatasetType']:
