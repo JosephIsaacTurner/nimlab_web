@@ -5,7 +5,7 @@ from django.db import models
 from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo, NiftiImage
 
 class DatasetSearchForm(forms.Form):
-    dataset_id = forms.ModelMultipleChoiceField(
+    id = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
@@ -52,8 +52,8 @@ class DatasetSearchForm(forms.Form):
 
     def search(self):
         datasets = Dataset.objects.all()
-        if self.cleaned_data['dataset_id']:
-            datasets = datasets.filter(dataset_id__icontains=self.cleaned_data['dataset_id'])
+        if self.cleaned_data['id']:
+            datasets = datasets.filter(id__icontains=self.cleaned_data['id'])
         # if self.cleaned_data['dataset_name']:
         #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         if self.cleaned_data['BIDSVersion']:
