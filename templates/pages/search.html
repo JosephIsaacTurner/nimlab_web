@@ -68,7 +68,7 @@
 {% if results %}
   <ul>
     {% for dataset in results %}
-      <li><a href="{% url 'file_explorer' path=dataset.directory_path|cut:'/published_datasets' %}">{{ dataset.dataset_name }}</a></li>
+      <li><a href="{% url 'file_explorer' path=dataset.directory_path|cut:'/published_datasets' %}">{{ dataset.dataset_name  }} ({{ dataset.directory_path}})</a></li>
     {% endfor %}
   </ul>
 {% endif %}
