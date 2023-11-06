@@ -10,6 +10,9 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 
 def file_viewer(request, path=''):
+    # This function is used to view files in the browser
+    # It checks to see if the file is a nifti file, and if so, it will display it in the browser
+    # Otherwise, it will redirect to the file_explorer view
     root_dir = 'published_datasets'
     base_dir = os.path.join(settings.STATICFILES_DIRS[0], root_dir)
     

@@ -1,0 +1,16 @@
+{# This template recursively displays directories and files #}
+
+<ul>
+  {% for file in contents.files %}
+    <li><a href="{% url 'file_viewer' path=path|add:file %}">{{ file }}</a></li>
+  {% endfor %}
+  {% for directory, subcontents in contents.directories.items %}
+    <li>
+      {{ directory }}/
+      <ul>
+        <a href="{% url 'file_explorer' path=path|add:directory|add:'/' %}">Open</a>
+        {% include "includes/directory_structure.html" with contents=subcontents path=path|add:directory|add:'/' %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
