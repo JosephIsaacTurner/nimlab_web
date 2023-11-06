@@ -43,11 +43,14 @@ from django.shortcuts import render
     # │   │       (and so on for other subdirectories and files)
 
 def get_directory_contents(path):
-    # This recursive helper function fetches contents of the given directory
+    # This recursive helper function fetches contents of the given directory, excluding dotfiles/directories
     contents = {'files': [], 'directories': {}}
     try:
         with os.scandir(path) as it:
             for entry in it:
+                if entry.name.startswith('.'):
+                    # Skip dotfiles and hidden directories
+                    continue
                 if entry.is_file():
                     # append file name
                     contents['files'].append(entry.name)
@@ -58,6 +61,7 @@ def get_directory_contents(path):
         # Handle any permissions errors
         pass
     return contents
+
 
 def file_explorer(request, path=''):
     root_dir = 'published_datasets'
