@@ -53,13 +53,17 @@ class DatasetSearchForm(forms.Form):
     def search(self):
         datasets = Dataset.objects.all()
         if self.cleaned_data['dataset_id']:
-            datasets = datasets.filter(id__icontains=self.cleaned_data['dataset_id'])
+            ids_query = Q(id__in=self.cleaned_data['dataset_id'])
+            datasets = datasets.filter(ids_query)
         # if self.cleaned_data['dataset_name']:
         #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         if self.cleaned_data['BIDSVersion']:
             datasets = datasets.filter(BIDSVersion__icontains=self.cleaned_data['BIDSVersion'])
         if self.cleaned_data['DatasetType']:
-            datasets = datasets.filter(DatasetType__icontains=self.cleaned_data['DatasetType'])
+            dataset_type_query = Q()
+            for dataset_type in self.cleaned_data['DatasetType']:
+                dataset_type_query |= Q(DatasetType=dataset_type)
+            datasets = datasets.filter(dataset_type_query)
         if self.cleaned_data['creation_date']:
             datasets = datasets.filter(creation_date__icontains=self.cleaned_data['creation_date'])
         if self.cleaned_data['comments']:
@@ -67,16 +71,23 @@ class DatasetSearchForm(forms.Form):
 
         # Search related models
         if self.cleaned_data['tag']:
-            datasets = datasets.filter(tags__tag__icontains=self.cleaned_data['tag'])
+            tag_query = Q()
+            for tag in self.cleaned_data['tag']:
+                tag_query |= Q(tags__in=[tag])
+            datasets = datasets.filter(tag_query)
         if self.cleaned_data['author_email']:
-            datasets = datasets.filter(authors__author_email__icontains=self.cleaned_data['author_email'])
+            author_email_query = Q()
+            for author_email in self.cleaned_data['author_email']:
+                author_email_query |= Q(authors__in=[author_email])
+            datasets = datasets.filter(author_email_query)
         if self.cleaned_data['contact_email']:
             datasets = datasets.filter(contacts__contact_email__icontains=self.cleaned_data['contact_email'])
-        if self.cleaned_data['citation']:
-            datasets = datasets.filter(
-                Q(citations_src__citation__icontains=self.cleaned_data['citation']) |
-                Q(citations_to__citation__icontains=self.cleaned_data['citation'])
-            )
+        if self.cleaned_data['contact_email']:
+            contact_email_query = Q()
+            for contact_email in self.cleaned_data['contact_email']:
+                contact_email_query |= Q(contacts__in=[contact_email])
+            datasets = datasets.filter(contact_email_query)
+
         if self.cleaned_data['path']:
             datasets = datasets.filter(nifti_images__path__icontains=self.cleaned_data['path'])
         if self.cleaned_data['type']:
