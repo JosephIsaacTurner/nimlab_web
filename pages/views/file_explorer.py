@@ -92,7 +92,7 @@ def file_explorer(request, path=''):
         contents = get_directory_contents(full_path)
 
     empty_directory = not contents['files'] and not any(contents['directories'])
-    if not path:
+    if path:
         path = path.rstrip('/ ').rstrip() + '/'
 
     context = {
