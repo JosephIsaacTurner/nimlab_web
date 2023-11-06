@@ -5,7 +5,7 @@ from django.db import models
 from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo, NiftiImage
 
 class DatasetSearchForm(forms.Form):
-    name = forms.CharField(required=False)
+    dataset_name = forms.CharField(required=False)
     bids_version = forms.CharField(required=False)
     dataset_type = forms.CharField(required=False)
     creation_date = forms.CharField(required=False)
@@ -23,8 +23,8 @@ class DatasetSearchForm(forms.Form):
     def search(self):
         datasets = Dataset.objects.all()
 
-        if self.cleaned_data['name']:
-            datasets = datasets.filter(name__icontains=self.cleaned_data['name'])
+        if self.cleaned_data['dataset_name']:
+            datasets = datasets.filter(name__icontains=self.cleaned_data['dataset_name'])
         if self.cleaned_data['bids_version']:
             datasets = datasets.filter(bids_version__icontains=self.cleaned_data['bids_version'])
         if self.cleaned_data['dataset_type']:
