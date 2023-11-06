@@ -92,9 +92,12 @@ def file_explorer(request, path=''):
         contents = get_directory_contents(full_path)
 
     empty_directory = not contents['files'] and not any(contents['directories'])
+    if not path:
+        path = path.rstrip('/ ').rstrip() + '/'
+
     context = {
         'display_path': path if path else root_dir,
-        'path': path.rstrip('/ ').rstrip() + '/', 'contents': contents, 'empty_directory': empty_directory,
+        'path': path, 'contents': contents, 'empty_directory': empty_directory,
         'root_dir': root_dir
     }
     return render(request, 'pages/file_explorer.html', context)
