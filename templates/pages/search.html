@@ -4,27 +4,63 @@
 
 {% block content %}
 
-<form method="get">
-
-<div class="accordion" id="searchAccordion">
-  {% for field in form.visible_fields %}
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-      <button class="accordion-button{% if not forloop.first %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="{{ forloop.first }}" aria-controls="collapse{{ forloop.counter }}">
-        {{ field.label }}
-      </button>
-    </h2>
-    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse{% if forloop.first %} show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#searchAccordion">
-      <div class="accordion-body">
-        {{ field|as_crispy_field }}
+{% if results %}
+  <!-- Wrap the entire form in a parent accordion only when there are results -->
+  <div class="accordion mb-3" id="parentAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingSearchForm">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSearchForm" aria-expanded="false" aria-controls="collapseSearchForm">
+          Search Parameters
+        </button>
+      </h2>
+      <div id="collapseSearchForm" class="accordion-collapse collapse" aria-labelledby="headingSearchForm" data-bs-parent="#parentAccordion">
+        <div class="accordion-body">
+          <form method="get">
+            <div class="accordion" id="searchAccordion">
+              <!-- Nested accordions for each form field -->
+              {% for field in form.visible_fields %}
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                    <button class="accordion-button{% if not forloop.first %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="{{ forloop.first }}" aria-controls="collapse{{ forloop.counter }}">
+                      {{ field.label }}
+                    </button>
+                  </h2>
+                  <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse{% if forloop.first %} show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#searchAccordion">
+                    <div class="accordion-body">
+                      {{ field|as_crispy_field }}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <input type="submit" value="Search" class="btn btn-primary my-3">
+          </form>
+        </div>
       </div>
     </div>
   </div>
-  {% endfor %}
-  <input type="submit" value="Search" class="btn btn-primary my-3">
-</div>
-
-</form>
+{% else %}
+  <!-- If there are no results, display each form field in its own accordion but don't wrap in parent accordion -->
+  <form method="get">
+    <div class="accordion" id="searchAccordion">
+      {% for field in form.visible_fields %}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+            <button class="accordion-button{% if not forloop.first %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="{{ forloop.first }}" aria-controls="collapse{{ forloop.counter }}">
+              {{ field.label }}
+            </button>
+          </h2>
+          <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse{% if forloop.first %} show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#searchAccordion">
+            <div class="accordion-body">
+              {{ field|as_crispy_field }}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <input type="submit" value="Search" class="btn btn-primary my-3">
+  </form>
+{% endif %}
 
 {% if results %}
   <ul>
