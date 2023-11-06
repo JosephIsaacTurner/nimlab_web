@@ -9,43 +9,30 @@
 </div>
 
 {% if empty_directory %}
-  <p class="lead">Root Directory: <a href="{% url 'file_explorer' path='' %}">{{ root_dir }}/</a></p>
-  <p class="lead">Working Directory: {{ display_path }}</p>
-  <p>This directory is empty.</p>
+  <p class="lead">This directory is empty.</p>
 {% else %}
-  <hr>
-  <div class="col-md-12">
-      
-      <h2 class="text-center mx-auto lead display-6">Dataset File Explorer</h2>
-      <p class="lead">Root Directory: <a href="{% url 'file_explorer' path='' %}">{{ root_dir }}/</a></p>
-      <p class="lead">Working Directory: {{ display_path }}</p>
+  <div class="container">
+    <hr>
+    <div class="col-md-12">
+        <h2 class="text-center mx-auto lead display-6">Dataset File Explorer</h2>
+        <p class="lead">Root Directory: <a href="{% url 'file_explorer' path='' %}">{{ root_dir }}/</a></p>
+        <p class="lead">Working Directory: {{ display_path }}</p>
 
-      {% if not path %}
-          <!-- We are at the root directory -->
-          <p class="h3">Datasets:</p>
-          <ul>
-          {% for directory in directories %}
-              <li><a href="{% url 'file_explorer' path=directory|add:'/' %}">{{ directory }}/</a></li>
-          {% endfor %}
-          </ul>
-      {% else %}
-          <!-- Inside a dataset directory, show files and subdirectories -->
-          <p class="h3">Files:</p>
-          <ul>
-          {% for file in contents.files %}
-              <li><a href="{% url 'file_viewer' path=path|add:file %}">{{ file }}</a></li>
-          {% endfor %}
-          </ul>
-
-          <p class="h3">Subdirectories:</p>
-          <ul>
-          {% for directory, subdirs in contents.directories.items %}
-              <li><a href="{% url 'file_explorer' path=path|add:directory|add:'/' %}">{{ directory }}/</a></li>
-          {% endfor %}
-          </ul>
-      {% endif %}
-      
+        {% if not path %}
+            <!-- We are at the root directory, show only subdirectories -->
+            <p class="h3">Datasets:</p>
+            <ul>
+            {% for directory in contents.directories %}
+                <li><a href="{% url 'file_explorer' path=directory|add:'/' %}">{{ directory }}/</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <!-- We are inside a subdirectory, show contents recursively -->
+            {% include "includes/directory_structure.html" with contents=contents path=path %}
+        {% endif %}
+    </div>
   </div>
 {% endif %}
 
 {% endblock content %}
+

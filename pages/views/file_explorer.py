@@ -72,7 +72,7 @@ def file_explorer(request, path=''):
     # Check if the path actually exists
     if not os.path.exists(full_path):
         context = {
-            'display_path': path if path and path.strip() else root_dir,
+            'display_path': path if path else root_dir,
             'path': path, 'empty_directory': True,
             'root_dir': root_dir
         }
@@ -82,24 +82,18 @@ def file_explorer(request, path=''):
     if os.path.isfile(full_path):
         return FileResponse(open(full_path, 'rb'))
 
-    # Check if we are at the root directory (/published_datasets/)
+    # Decide what to display based on whether we're at the root directory
     if not path:
-        # If so, only list non-hidden subdirectories
+        # At the root, list only non-hidden subdirectories
         directories = [d for d in os.listdir(full_path) if os.path.isdir(os.path.join(full_path, d)) and not d.startswith('.')]
-        context = {
-            'display_path': root_dir,
-            'directories': directories,
-            'empty_directory': not directories,
-            'root_dir': root_dir
-        }
-        return render(request, 'pages/file_explorer.html', context)
-
-    # If path is not empty, we recursively list directories and files
-    contents = get_directory_contents(full_path)
+        contents = {'files': [], 'directories': {d: {} for d in directories}}
+    else:
+        # Not at the root, recursively list all contents
+        contents = get_directory_contents(full_path)
 
     empty_directory = not contents['files'] and not any(contents['directories'])
     context = {
-        'display_path': path if path and path.strip() else root_dir,
+        'display_path': path if path else root_dir,
         'path': path, 'contents': contents, 'empty_directory': empty_directory,
         'root_dir': root_dir
     }
