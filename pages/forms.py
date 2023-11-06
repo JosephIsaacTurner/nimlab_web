@@ -12,6 +12,12 @@ class DatasetSearchForm(forms.Form):
         label="Dataset Name"
     )
     # BIDSVersion = forms.CharField(required=False)
+    dataset_path = forms.ModelMultipleChoiceField(
+        queryset=Dataset.objects.values_list('directory_path', flat=True).distinct(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Contact Email"
+    )
     DatasetType = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.values_list('DatasetType', flat=True).distinct(),
         widget=forms.CheckboxSelectMultiple,
@@ -55,6 +61,9 @@ class DatasetSearchForm(forms.Form):
         if self.cleaned_data['dataset_id']:
             ids_query = Q(id__in=self.cleaned_data['dataset_id'])
             datasets = datasets.filter(ids_query)
+        if self.cleaned_data['dataset_path']:
+            directory_paths_query = Q(directory_path__in=self.cleaned_data['dataset_path'])
+            datasets = datasets.filter(directory_paths_query)
         # if self.cleaned_data['dataset_name']:
         #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         # if self.cleaned_data['BIDSVersion']:
