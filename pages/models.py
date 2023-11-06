@@ -48,3 +48,19 @@ class CitationTo(models.Model):
 
     class Meta:
         db_table = 'citations_to'
+
+class NiftiImage(models.Model):
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='nifti_images')
+    path = models.CharField(max_length=255, unique=True)
+    type = models.CharField(max_length=255, blank=True, null=True)
+    md5 = models.CharField(max_length=255, blank=True, null=True)
+    roi_size = models.IntegerField(blank=True, null=True)
+    mask = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'nifti_images'
+
+class NiftiLinearized(models.Model):
+    nifti_image = models.ForeignKey(NiftiImage, on_delete=models.CASCADE, related_name='nifti_linearized')
+    voxel_id = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
