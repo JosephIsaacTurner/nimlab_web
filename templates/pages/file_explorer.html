@@ -19,7 +19,7 @@
         <p class="lead">Working Directory: {{ display_path }}</p>
 
         {% if not path %}
-            <!-- We are at the root directory, show only subdirectories -->
+            <!-- We are at the root directory, show only top-level directories -->
             <p class="h3">Datasets:</p>
             <ul>
             {% for directory in contents.directories %}
@@ -28,11 +28,10 @@
             </ul>
         {% else %}
             <!-- We are inside a subdirectory, show contents recursively -->
-            {% include "includes/directory_structure.html" with contents=contents path=path %}
+            {% include "includes/directory_structure.html" with contents=contents path=path prefix="" %}
         {% endif %}
     </div>
   </div>
 {% endif %}
 
 {% endblock content %}
-
