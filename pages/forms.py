@@ -16,7 +16,7 @@ class DatasetSearchForm(forms.Form):
         queryset=Dataset.objects.values_list('directory_path', flat=True).distinct(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label="Contact Email"
+        label="Dataset Directory"
     )
     DatasetType = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.values_list('DatasetType', flat=True).distinct(),
