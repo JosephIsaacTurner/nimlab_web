@@ -20,6 +20,8 @@ class Tag(models.Model):
 
     class Meta:
         db_table = 'tags'
+    def __str__(self):
+        return self.tag
 
 class Author(models.Model):
     author_email = models.CharField(max_length=255)
@@ -27,6 +29,8 @@ class Author(models.Model):
 
     class Meta:
         db_table = 'authors'
+    def __str__(self):
+        return self.author_email
 
 class Contact(models.Model):
     contact_email = models.CharField(max_length=255)
