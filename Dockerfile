@@ -9,6 +9,10 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /app
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install -y netcat && \
+    apt-get clean
+
 # Install dependencies
 COPY requirements.txt /tmp/requirements.txt
 
