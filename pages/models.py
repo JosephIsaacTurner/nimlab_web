@@ -7,6 +7,7 @@ class Dataset(models.Model):
     DatasetType = models.CharField(max_length=255, blank=True, null=True)
     creation_date = models.CharField(max_length=255, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
+    directory_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'datasets'
