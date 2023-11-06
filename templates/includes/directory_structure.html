@@ -1,16 +1,29 @@
-{# This template recursively displays directories and files #}
-
-<ul>
-  {% for file in contents.files %}
-    <li><a href="{% url 'file_viewer' path=path|add:file %}">{{ file }}</a></li>
-  {% endfor %}
-  {% for directory, subcontents in contents.directories.items %}
-    <li>
-      {{ directory }}/
-      <ul>
-        <a href="{% url 'file_explorer' path=path|add:directory|add:'/' %}">Open</a>
-        {% include "includes/directory_structure.html" with contents=subcontents path=path|add:directory|add:'/' %}
-      </ul>
-    </li>
-  {% endfor %}
-</ul>
+{% for directory, sub_contents in contents.directories.items %}
+  <div class="accordion" id="accordion{{ forloop.counter }}">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+          {{ directory }}
+        </button>
+      </h2>
+      <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordion{{ forloop.counter }}">
+        <div class="accordion-body">
+          <!-- List files if there are any -->
+          {% if sub_contents.files %}
+            <p class="h5">Files:</p>
+            <ul>
+            {% for file in sub_contents.files %}
+              <li><a href="{% url 'file_viewer' path=path|add:directory|add:'/'|add:file %}">{{ file }}</a></li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+          <!-- Recursively include this template to show nested directories -->
+          {% if sub_contents.directories %}
+            <p class="h5">Subdirectories:</p>
+            {% include "includes/directory_structure.html" with contents=sub_contents path=path|add:directory|add:'/' %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
