@@ -2,7 +2,7 @@
 from django.db import models
 
 class Dataset(models.Model):
-    name = models.CharField(max_name=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     bids_version = models.CharField(max_length=255, blank=True, null=True)
     dataset_type = models.CharField(max_length=255, blank=True, null=True)
     creation_date = models.CharField(max_length=255, blank=True, null=True)
