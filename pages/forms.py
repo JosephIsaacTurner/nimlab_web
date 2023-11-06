@@ -5,17 +5,47 @@ from django.db import models
 from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo, NiftiImage
 
 class DatasetSearchForm(forms.Form):
-    dataset_name = forms.CharField(required=False)
+    dataset_name = forms.ModelMultipleChoiceField(
+        queryset=Dataset.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Dataset Name"
+    )
     BIDSVersion = forms.CharField(required=False)
-    DatasetType = forms.CharField(required=False)
+    DatasetType = forms.ModelMultipleChoiceField(
+        queryset=Dataset.objects.values_list('DatasetType', flat=True).distinct(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Dataset Type"
+    )
     creation_date = forms.CharField(required=False)
     comments = forms.CharField(required=False)
-    tag = forms.CharField(required=False)
-    author_email = forms.CharField(required=False)
-    contact_email = forms.CharField(required=False)
+    tag = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Tags"
+    )
+    author_email = forms.ModelMultipleChoiceField(
+        queryset=Author.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Author Email"
+    )
+    contact_email = forms.ModelMultipleChoiceField(
+        queryset=Contact.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Contact Email"
+    )
     citation = forms.CharField(required=False)
     path = forms.CharField(required=False)
-    type = forms.CharField(required=False)
+    type = forms.ModelMultipleChoiceField(
+        queryset=NiftiImage.objects.values_list('type', flat=True).distinct(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Type"
+    )
     md5 = forms.CharField(required=False)
     roi_size = forms.IntegerField(required=False)
     mask = forms.CharField(required=False)
