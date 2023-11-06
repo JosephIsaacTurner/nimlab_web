@@ -5,11 +5,11 @@ from django.db import models
 from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo, NiftiImage
 
 class DatasetSearchForm(forms.Form):
-    dataset_name = forms.ModelMultipleChoiceField(
+    dataset_id = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label="Dataset Name"
+        label="Dataset Id"
     )
     BIDSVersion = forms.CharField(required=False)
     DatasetType = forms.ModelMultipleChoiceField(
