@@ -2,7 +2,10 @@
 
 {% load crispy_forms_tags %}
 
+{% block title %}Search Datasets{% endblock %}
+
 {% block content %}
+<h2 class="text-center mx-auto lead display-6">Search Datasets</h2>
 
 {% if results %}
   <!-- Wrap the entire form in a parent accordion only when there are results -->
