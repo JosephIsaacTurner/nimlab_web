@@ -12,12 +12,13 @@ class DatasetSearchForm(forms.Form):
         label="Dataset Name"
     )
     # BIDSVersion = forms.CharField(required=False)
-    # dataset_path = forms.ModelMultipleChoiceField(
-    #     queryset=Dataset.objects.values_list('directory_path', flat=True).distinct(),
-    #     widget=forms.CheckboxSelectMultiple,
-    #     required=False,
-    #     label="Dataset Directory"
-    # )
+    dataset_path = forms.MultipleChoiceField(
+        choices=[],  # You can dynamically populate this in the __init__ method
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Dataset Directory"
+    )
+
     DatasetType = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.values_list('DatasetType', flat=True).distinct(),
         widget=forms.CheckboxSelectMultiple,
@@ -55,12 +56,6 @@ class DatasetSearchForm(forms.Form):
     # md5 = forms.CharField(required=False)
     # roi_size = forms.IntegerField(required=False)
     # mask = forms.CharField(required=False)
-    dataset_path = forms.MultipleChoiceField(
-        choices=[],  # You can dynamically populate this in the __init__ method
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label="Dataset Directory"
-    )
 
     def __init__(self, *args, **kwargs):
         super(DatasetSearchForm, self).__init__(*args, **kwargs)
