@@ -82,10 +82,16 @@ def file_explorer(request, path=''):
     if os.path.isfile(full_path):
         return FileResponse(open(full_path, 'rb'))
 
-    # Otherwise, assume it's a directory and list its contents recursively
-    contents = get_directory_contents(full_path)
+    # Check if we are at the root directory (or at /published_datasets/)
+    if path.strip('/') == root_dir or not path:
+        # If so, only list subdirectories (not their contents)
+        directories = [d for d in os.listdir(full_path) if os.path.isdir(os.path.join(full_path, d)) and not d.startswith('.')]
+        contents = {'files': [], 'directories': {d: {} for d in directories}}
+    else:
+        # Otherwise, load everything under the subdirectory
+        contents = get_directory_contents(full_path)
 
-    empty_directory = not contents['files'] and not contents['directories']
+    empty_directory = not contents['files'] and not any(contents['directories'])
     context = {
         'display_path': path if path and path.strip() else root_dir,
         'path': path, 'contents': contents, 'empty_directory': empty_directory,
