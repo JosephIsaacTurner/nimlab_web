@@ -28,7 +28,7 @@
             </ul>
         {% else %}
             <!-- We are inside a subdirectory, show contents recursively -->
-            {% include "includes/directory_structure.html" with contents=contents path=path prefix="" %}
+            {% include "includes/directory_structure.html" with contents=contents path=path prefix="$$b" %}
         {% endif %}
     </div>
   </div>
