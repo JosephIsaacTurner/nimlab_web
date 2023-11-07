@@ -118,12 +118,13 @@ def file_explorer(request, path=''):
                 'dataset_name': dataset_name,
                 'in_database': in_database
             }
+        download_csv = False
     else:
-        directory_info = None
+        if Dataset.objects.filter(dataset_path=os.path.join(root_dir+path)).exists():
+            download_csv = True
+        else:
+            download_csv = False
 
-
-
-    # Now, 'contents' contains the sorted lists
     sorted_contents = {
         'files': sorted_files,
         'directories': sorted_directories
@@ -131,6 +132,7 @@ def file_explorer(request, path=''):
 
 
     context = {
+        'download_csv': download_csv,
         'display_path': path if path else root_dir,
         'path': path,
         'contents': contents,
