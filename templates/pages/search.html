@@ -64,7 +64,6 @@
     <input type="submit" value="Search" class="btn btn-primary my-3">
   </form>
 {% endif %}
-
 {% if results %}
     <div class="container mt-4">
         <h2 class="mb-3">Results:</h2>
@@ -75,8 +74,12 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ dataset.dataset_name }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ dataset.dataset_path }}</h6>
-                            <p class="card-text">Some additional information about the dataset could go here.</p>
-                            <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}" class="card-link">Explore Files</a>
+                            <p class="card-text">Comments: {{ dataset.comments }}</p>
+                            <!-- Updated Explore Files button -->
+                            <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}" class="btn btn-outline-secondary btn-sm me-2">
+                                <i class="fas fa-folder-open me-2"></i>Explore Files
+                            </a>
+                            <!-- Updated Download CSV button -->
                             <a href="{% url 'generate_csv' dataset_path=dataset.dataset_path %}" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-download me-2"></i>Download CSV
                             </a>
