@@ -307,7 +307,6 @@ surfRhAvgR_fs5 AS (
 
 select * from (
 SELECT
-    s.id as subject_id,
     s.subject as subject_name,
     roi_2mm.roi_2mm,
     roi_1mm.roi_1mm,
