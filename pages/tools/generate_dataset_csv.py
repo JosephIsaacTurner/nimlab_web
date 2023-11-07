@@ -105,24 +105,33 @@ for statistic, coordinate_system, hemisphere, connectome in unique_conn_rows:
     """
     stat_wheres.append(stat_where)
 
-big_query = """
+# Build the common table expressions (CTEs) without the final comma
+cte_combined = "".join(roi_ctes) + "".join(stat_ctes)
+if cte_combined.endswith(','):
+    cte_combined = cte_combined[:-1]  # Remove the last comma
+
+# Build the select statements without the final comma
+select_combined = "".join(roi_selects) + "".join(stat_selects)
+if select_combined.endswith(','):
+    select_combined = select_combined[:-1]  # Remove the last comma
+
+# Combine everything into the final big query
+big_query = f"""
 WITH dataset_path_cte AS (
     SELECT id
     FROM datasets
     WHERE dataset_path = '$$dataset_path$$'
 ),
-""" + "".join(roi_ctes) + "".join(stat_ctes) + """
-select * from (
-SELECT
-    s.subject as subject_name,
-""" + "".join(roi_selects) + "".join(stat_selects) + """
-FROM subjects s
-""" + "".join(roi_joins) + "".join(stat_joins) + """
-WHERE """ + " OR ".join(roi_wheres) + " OR " + " OR ".join(stat_wheres) + """
+{cte_combined}
+SELECT * FROM (
+    SELECT
+        s.subject as subject_name,
+        {select_combined}
+    FROM subjects s
+    {"".join(roi_joins)}{"".join(stat_joins)}
+    WHERE {" OR ".join(roi_wheres)} OR {" OR ".join(stat_wheres)}
 ) as sub_q_1;
 """
-
-
 
 
 # query = """
