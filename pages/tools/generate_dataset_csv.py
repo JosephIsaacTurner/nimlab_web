@@ -1,4 +1,5 @@
 import pandas as pd
+from django.shortcuts import HttpResponse
 from django.db import connection
 
 query = """
@@ -393,25 +394,26 @@ WHERE roi_2mm.roi_2mm IS NOT NULL
    OR surfRhAvgR_fs5.surfRhAvgR_fs5 IS NOT null) as sub_q_1;
 """
 
-
-def generate_dataset_csv(dataset_path):
+def generate_dataset_csv(request, 
+                         dataset_path="/published_datasets/joutsa_2022_nature_medicine_addiction_remission_iowa_lesions"):
     # Replace the placeholder with the actual dataset path in the SQL query
     formatted_query = query.replace('$$dataset_path$$', dataset_path)
-    
-    # Use Django database connection to execute the raw SQL and fetch the result as a DataFrame
+
+    # Execute the query and fetch data
     with connection.cursor() as cursor:
         cursor.execute(formatted_query)
         rows = cursor.fetchall()
-        # Assuming you have the column names
         columns = [col[0] for col in cursor.description]
         df = pd.DataFrame(rows, columns=columns)
 
-    # Exclude columns from the DataFrame that are entirely Null/None
+    # Exclude columns that are entirely Null/None
     df = df.dropna(axis='columns', how='all')
 
-    # Finally, save the DataFrame as a CSV file
-    df.to_csv('dataset.csv', index=False)
+    # Convert DataFrame to CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
 
-if __name__ == '__main__':
-    path = "/published_datasets/joutsa_2022_nature_medicine_addiction_remission_iowa_lesions"
-    generate_dataset_csv(path)
+    # Write the CSV data to the response object
+    df.to_csv(path_or_buf=response, index=False)
+
+    return response
