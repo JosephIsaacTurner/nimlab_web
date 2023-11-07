@@ -100,10 +100,9 @@ def file_explorer(request, path=''):
     # Sort the 'files' and 'directories' arrays alphabetically
     sorted_files = sorted(contents['files'])
     sorted_directories = sorted(contents['directories'])
+    directory_info = {}
     if not path:
         # Create a dictionary with directory names as keys and another dictionary with dataset_name and in_database as values
-        directory_info = {}
-
         for directory in sorted_directories:
             # Construct the full path to match with dataset_path in the database
             full_directory_path = os.path.join(path, directory) if path else directory
