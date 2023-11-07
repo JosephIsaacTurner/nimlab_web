@@ -72,6 +72,7 @@ def generate_dataset_csv(
             | (archive_df["extension"] == ".trk.gz.tdi.nii.gz")
         )
     ]
+    print(archive_df.columns)
     conn_csv = pd.DataFrame()
     conn_csv["dataset"] = [project_name] * len(conn_files["subject"].unique())
     conn_csv["subject"] = conn_files["subject"].unique()
@@ -149,46 +150,10 @@ def generate_dataset_csv(
 
 if __name__ == "__main__":
     
-    project_path = "/app/static/published_datasets/jaya_2019_biol_psychiatry_depression_gsp500f/"
-    project_name = "depression_lesions_GSP500F"
+    project_path = "/app/static/published_datasets/joutsa_2022_nature_medicine_addiction_remission_rochester_lesions_yeo1000/"
+    project_name = "juho_addiction_rochester_lesions_yeo1000"
     vol_spaces = {"input": ["2mm"], "output": ["2mm"]}
     surf_spaces = {"input": ["fs5"], "output": ["fs5"]}
     lesion_type = "volume" # or surface
     generate_dataset_csv(project_path, project_name, vol_spaces, surf_spaces, lesion_type)
     print("done")
-    # # project_path = "/Users/kevin/Downloads/lesion-symptom-mapping"
-    # # project_name = "lesion-symptom-mapping"
-    # # vol_spaces = {
-    # #     "input": ["orig", "mni152_1mm", "mni152_2mm"],
-    # #     "output": ["orig", "mni152_1mm", "mni152_2mm"],
-    # # }
-    # # surf_spaces = {
-    # #     "input": ["fsnative", "fsaverage5", "fsaverage6", "fsaverage7"],
-    # #     "output": ["fsnative", "fsaverage5", "fsaverage6", "fsaverage7"],
-    # # }
-    # # lesion_type = "volume"
-    # # generate_dataset_csv(
-    # #     project_path,
-    # #     project_name,
-    # #     vol_spaces,
-    # #     surf_spaces,
-    # #     lesion_type,
-    # # )
-    # project_path = "/Users/kevin/Downloads/lesion-symptom-mapping"
-    # project_name = "lesion-symptom-mapping"
-    # vol_spaces = {
-    #     "input": ["orig", "mni152_1mm", "mni152_2mm"],
-    #     "output": ["orig", "mni152_1mm", "mni152_2mm"],
-    # }
-    # surf_spaces = {
-    #     "input": ["fsnative", "fsaverage5", "fsaverage6", "fsaverage7"],
-    #     "output": ["fsnative", "fsaverage5", "fsaverage6", "fsaverage7"],
-    # }
-    # lesion_type = "volume"
-    # generate_dataset_csv(
-    #     project_path,
-    #     project_name,
-    #     vol_spaces,
-    #     surf_spaces,
-    #     lesion_type,
-    # )
