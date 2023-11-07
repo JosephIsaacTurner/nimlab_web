@@ -39,10 +39,7 @@
 {% endblock %} -->
 {% block content %}
 
-
-<h4>{{ dataset_path }}</h4>
-<a href="{% url 'file_explorer' path=dataset_path %}">Explore this dataset</a>
-
+<a href="{% url 'file_explorer' path=dataset_path %}">Return to dataset</a>
 <h5>{{ display_path }}</h5>
 <hr>
 <div class="row">
