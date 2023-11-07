@@ -7,7 +7,7 @@ class Dataset(models.Model):
     DatasetType = models.CharField(max_length=255, blank=True, null=True)
     creation_date = models.CharField(max_length=255, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    directory_path = models.CharField(max_length=255, blank=True, null=True)
+    dataset_path = models.CharField(max_length=255, blank=True, null=True)  # Renamed from directory_path
 
     class Meta:
         db_table = 'datasets'
@@ -58,18 +58,33 @@ class CitationTo(models.Model):
     class Meta:
         db_table = 'citations_to'
 
-class NiftiImage(models.Model):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='nifti_images')
-    path = models.CharField(max_length=255, unique=True)
-    type = models.CharField(max_length=255, blank=True, null=True)
-    md5 = models.CharField(max_length=255, blank=True, null=True)
-    roi_size = models.IntegerField(blank=True, null=True)
-    mask = models.CharField(max_length=255, blank=True, null=True)
+class Subject(models.Model):
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='subjects')
+    subject_label = models.CharField(max_length=255)  # Assuming you want to rename 'subject' to 'subject_label'
+    file_path = models.CharField(max_length=255)
 
     class Meta:
-        db_table = 'nifti_images'
+        db_table = 'subjects'
 
-class NiftiLinearized(models.Model):
-    nifti_image = models.ForeignKey(NiftiImage, on_delete=models.CASCADE, related_name='nifti_linearized')
-    voxel_id = models.CharField(max_length=255)
-    value = models.CharField(max_length=255)
+    def __str__(self):
+        return self.subject_label
+
+class DataArchive(models.Model):
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='data_archives')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='data_archives')
+    type = models.CharField(max_length=255, blank=True, null=True)
+    file_path = models.CharField(max_length=255)
+    file_extension = models.CharField(max_length=255, blank=True, null=True)
+    coordinate_system = models.CharField(max_length=255, blank=True, null=True)
+    connectome = models.CharField(max_length=255, blank=True, null=True)
+    hemisphere = models.CharField(max_length=255, blank=True, null=True)
+    statistic = models.CharField(max_length=255, blank=True, null=True)
+    file_metadata_path = models.CharField(max_length=255, blank=True, null=True)
+    md5 = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'data_archives'
+
+    def __str__(self):
+        return f"{self.type} - {self.file_path}"
+

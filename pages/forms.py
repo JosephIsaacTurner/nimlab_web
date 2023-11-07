@@ -59,20 +59,20 @@ class DatasetSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(DatasetSearchForm, self).__init__(*args, **kwargs)
-        self.fields['dataset_path'].choices = Dataset.objects.values_list('directory_path', 'directory_path').distinct()
+        self.fields['dataset_path'].choices = Dataset.objects.values_list('dataset_path', 'dataset_path').distinct()
 
 
     def search(self):
         datasets = Dataset.objects.all()
         if self.cleaned_data['dataset_path']:
-            directory_paths_query = Q(directory_path__in=self.cleaned_data['dataset_path'])
-            datasets = datasets.filter(directory_paths_query)
+            dataset_paths_query = Q(dataset_path__in=self.cleaned_data['dataset_path'])
+            datasets = datasets.filter(dataset_paths_query)
         if self.cleaned_data['dataset_id']:
             ids_query = Q(id__in=self.cleaned_data['dataset_id'])
             datasets = datasets.filter(ids_query)
         # if self.cleaned_data['dataset_path']:
-        #     directory_paths_query = Q(directory_path__in=self.cleaned_data['dataset_path'])
-        #     datasets = datasets.filter(directory_paths_query)
+        #     dataset_paths_query = Q(dataset_path__in=self.cleaned_data['dataset_path'])
+        #     datasets = datasets.filter(dataset_paths_query)
         # if self.cleaned_data['dataset_name']:
         #     datasets = datasets.filter(dataset_name__icontains=self.cleaned_data['dataset_name'])
         # if self.cleaned_data['BIDSVersion']:
@@ -83,10 +83,10 @@ class DatasetSearchForm(forms.Form):
                 dataset_type_query |= Q(DatasetType=dataset_type)
             datasets = datasets.filter(dataset_type_query)
         # if self.cleaned_data['dataset_path']:
-        #     directory_paths_query = Q()
-        #     for directory_path in self.cleaned_data['dataset_path']:
-        #         directory_paths_query |= Q(directory_path=directory_path)
-        #     datasets = datasets.filter(directory_paths_query)
+        #     dataset_paths_query = Q()
+        #     for dataset_path in self.cleaned_data['dataset_path']:
+        #         dataset_paths_query |= Q(dataset_path=dataset_path)
+        #     datasets = datasets.filter(dataset_paths_query)
         # if self.cleaned_data['creation_date']:
         #     datasets = datasets.filter(creation_date__icontains=self.cleaned_data['creation_date'])
         if self.cleaned_data['comments']:
