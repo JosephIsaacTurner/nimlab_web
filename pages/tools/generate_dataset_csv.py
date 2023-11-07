@@ -38,33 +38,34 @@ FSAVERAGE_NAMES = {
 #         hasher.update(buf)
 #     return hasher.hexdigest()
 
-def generate_dataset_csv(
-    project_path,
-    project_name,
-    vol_spaces,
-    surf_spaces,
-    lesion_type,
-):
+def generate_dataset_csv(project_path, project_name, vol_spaces, surf_spaces, lesion_type):
     """
-    Generate ready-to-use csv within the dataset for safety
+    Generate ready-to-use csv within the dataset for safety.
     """
-    parent_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(parent_dir, 'connectivity_config.json')
-    
-    layout = BIDSLayout(project_path, validate=False, config=config_path)
-    archive_df = layout.to_df()
 
-    # Define default values for missing entities
+    # Default values for entities
     defaults = {
         "coordinateSystem": "2mm",
         "hemisphere": "L",
     }
 
+    # Load BIDSLayout and dataframe
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(parent_dir, 'connectivity_config.json')
+    
+    archive_df = BIDSLayout(
+        project_path,
+        validate=False,
+        config=config_path,
+    ).to_df()
+    
     # Apply default values to the dataframe
     for key, value in defaults.items():
-        if key in archive_df.columns and archive_df[key].isna().any():
-            archive_df[key] = archive_df[key].fillna(value)
-
+        if key not in archive_df.columns:
+            archive_df[key] = value
+        else:
+            archive_df[key].fillna(value, inplace=True)
+    
     # Filter files with statistics and valid extensions
     conn_files = archive_df[
         (~archive_df["statistic"].isna())
