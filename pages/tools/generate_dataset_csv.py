@@ -52,10 +52,12 @@ for coordinate_system, hemisphere in unique_roi_rows:
     roi_join = f"""
         LEFT JOIN {field_name} ON {field_name}.subject_id = s.id
     """
+    roi_joins.append(roi_join)
 
     roi_wheres = f"""
         {field_name}.{field_name} IS NOT NULL
     """
+    roi_wheres.append(roi_wheres)
 
 stat_ctes = []
 stat_selects = []
