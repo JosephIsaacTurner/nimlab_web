@@ -47,30 +47,31 @@ def generate_dataset_csv(
 ):
     """
     Generate ready-to-use csv within the dataset for safety
-
     """
     parent_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(parent_dir, 'connectivity_config.json')
     
-    archive_df = BIDSLayout(
-        project_path,
-        validate=False,
-        config=config_path,
-    ).to_df()
+    layout = BIDSLayout(project_path, validate=False, config=config_path)
+    archive_df = layout.to_df()
+
+    # Define default values for missing entities
+    defaults = {
+        "coordinateSystem": "2mm",
+        "hemisphere": "L",
+    }
+
+    # Apply default values to the dataframe
+    for key, value in defaults.items():
+        if key in archive_df.columns and archive_df[key].isna().any():
+            archive_df[key] = archive_df[key].fillna(value)
+
+    # Filter files with statistics and valid extensions
     conn_files = archive_df[
         (~archive_df["statistic"].isna())
-        & (
-            (archive_df["extension"] == ".nii.gz")
-            | (archive_df["extension"] == ".gii")
-            | (archive_df["extension"] == ".mat")
-            | (archive_df["extension"] == ".trk.gz")
-            | (archive_df["extension"] == ".connectivity.mat")
-            | (archive_df["extension"] == ".txt")
-            | (archive_df["extension"] == ".connectogram.txt")
-            | (archive_df["extension"] == ".node")
-            | (archive_df["extension"] == ".edge")
-            | (archive_df["extension"] == ".trk.gz.tdi.nii.gz")
-        )
+        & archive_df["extension"].isin([
+            ".nii.gz", ".gii", ".mat", ".trk.gz", ".connectivity.mat",
+            ".txt", ".connectogram.txt", ".node", ".edge", ".trk.gz.tdi.nii.gz"
+        ])
     ]
     print(archive_df.columns)
     conn_csv = pd.DataFrame()
