@@ -12,7 +12,7 @@ DEBUG = True
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "172.22.74.101", 'http://172.22.74.101:8080', '172.22.74.101:8080']
-CRSF_TRUSTED_ORIGINS = ['http://172.22.74.101:8080','https://172.22.74.101:8080']
+CRSF_TRUSTED_ORIGINS = ['172.22.74.101:8080','http://172.22.74.101:8080', 'http://172.22.74.101','https://172.22.74.101:8080']
 # ALLOWED_HOSTS = ['*']  # Only for development; not recommended for production
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
