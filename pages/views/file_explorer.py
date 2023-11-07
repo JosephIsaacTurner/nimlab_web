@@ -133,7 +133,8 @@ def file_explorer(request, path=''):
     context = {
         'display_path': path if path else root_dir,
         'path': path,
-        'contents': sorted_contents,
+        'contents': contents,
+        'sorted_contents': sorted_contents,
         'empty_directory': empty_directory,
         'root_dir': root_dir,
         'directory_info': directory_info
