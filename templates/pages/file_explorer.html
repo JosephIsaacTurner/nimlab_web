@@ -21,8 +21,8 @@
         {% if not path %}
 <!-- We are at the root directory, show only top-level directories -->
 <div class="container mt-4">
-  {% for item in directory_info %}
-  <p>{{item.dataset_name}}  {{item.in_database }}</p>
+  {% for directory, info in directory_info.items %}
+    <p>{{ info.dataset_name }} {{ info.in_database }}</p>
   {% endfor %}
   <h2 class="mb-3">Datasets:</h2>
   <p>Note that downloadable CSVs are currently unavailable for datasets that are not BIDS compatible</p>
