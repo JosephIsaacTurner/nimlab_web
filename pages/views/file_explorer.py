@@ -119,7 +119,7 @@ def file_explorer(request, path=''):
             }
         download_csv = False
     else:
-        test_path = "/published_datasets/" + path
+        test_path = "/published_datasets/" + path.replace("/","").replace("/","")
         if Dataset.objects.filter(dataset_path=test_path).exists():
             download_csv = True
         else:
