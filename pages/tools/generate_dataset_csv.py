@@ -75,6 +75,9 @@ def generate_dataset_csv(project_path, project_name, vol_spaces, surf_spaces, le
         ])
     ]
     print(archive_df.columns)
+    print(conn_files.columns)
+    print(conn_files["statistic"].unique())
+    print(conn_files)
     conn_csv = pd.DataFrame()
     conn_csv["dataset"] = [project_name] * len(conn_files["subject"].unique())
     conn_csv["subject"] = conn_files["subject"].unique()
