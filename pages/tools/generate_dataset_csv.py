@@ -408,13 +408,20 @@ def generate_dataset_csv(request, dataset_path):
 
     # Exclude columns that are entirely Null/None
     df = df.dropna(axis='columns', how='all')
+    
+    # Concatenate '/data/nimlab/dl_archive/NIMLAB_DATABASE' to all columns except 'subject_name'
+    prefix = '/data/nimlab/NIMLAB_DATABASE'
+    for column in df.columns:
+        if column != 'subject_name':
+            df[column] = df[column].apply(lambda x: f'{prefix}{x}' if pd.notnull(x) else x)
 
     # Convert DataFrame to CSV
     response = HttpResponse(content_type='text/csv')
-    dataset_name = dataset_path.replace("/published_datasets/","")
+    dataset_name = dataset_path.replace("/published_datasets/", "")
     response['Content-Disposition'] = f'attachment; filename="{dataset_name}_dataset.csv"'
 
     # Write the CSV data to the response object
     df.to_csv(path_or_buf=response, index=False)
 
     return response
+
