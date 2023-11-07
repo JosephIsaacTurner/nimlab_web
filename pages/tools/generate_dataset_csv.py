@@ -154,6 +154,7 @@ def get_big_query(dataset_path):
         WHERE {" OR ".join(roi_wheres)} OR {" OR ".join(stat_wheres)}
     ) as sub_q_1;
     """
+    return big_query
 
 def generate_dataset_csv(request, dataset_path):
     if dataset_path == '':
