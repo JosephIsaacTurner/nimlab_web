@@ -74,8 +74,9 @@
                     {{ dataset.dataset_name }} ({{ dataset.dataset_path }})
                 </a>
                 <!-- Button for CSV download -->
+                &nbsp;&nbsp;&nbsp;
                 <a href="{% url 'generate_csv' dataset_path=dataset.dataset_path %}" class="btn btn-primary btn-sm" role="button">
-                    <i class="fas fa-file-csv"></i> CSV
+                    <i class="fas fa-file-csv"></i> Download CSV
                 </a>
             </li>
         {% endfor %}
