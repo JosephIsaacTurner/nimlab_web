@@ -67,12 +67,21 @@
 
 {% if results %}
     <p class="h3 lead">Results:</p>
-  <ul>
-    {% for dataset in results %}
-      <li><a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}">{{ dataset.dataset_name  }} ({{ dataset.dataset_path}})</a></li>
-    {% endfor %}
-  </ul>
+    <ul>
+        {% for dataset in results %}
+            <li>
+                <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}">
+                    {{ dataset.dataset_name }} ({{ dataset.dataset_path }})
+                </a>
+                <!-- Button for CSV download -->
+                <a href="{% url 'generate_csv' dataset_path=dataset.dataset_path %}" class="btn btn-primary btn-sm" role="button">
+                    <i class="fas fa-file-csv"></i> CSV
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 {% endif %}
+
 
 
 {% endblock %}
