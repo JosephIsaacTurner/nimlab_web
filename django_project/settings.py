@@ -10,6 +10,18 @@ SECRET_KEY = "django-insecure-0peo@#x9jur3!h$ryje!$879xww8y1y66jx!%*#ymhg&jkozs2
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 
+# Trust the `X-Forwarded-Proto` header
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# May not be necessary unless you're using HTTPS through Nginx and want to indicate that Django is secure
+SECURE_SSL_REDIRECT = False  # Set to True if you are using HTTPS
+
+# Trust the `X-Forwarded-Host` header (if you're using this header in Nginx)
+USE_X_FORWARDED_HOST = True
+
+# If you're using `X-Forwarded-Port` header in Nginx, you should also add this setting
+USE_X_FORWARDED_PORT = True
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "172.22.74.101", 'http://172.22.74.101:8080', '172.22.74.101:8080']
 CRSF_TRUSTED_ORIGINS = ['172.22.74.101:8080','http://172.22.74.101:8080', 'http://172.22.74.101','https://172.22.74.101:8080']
