@@ -40,8 +40,10 @@
 {% block content %}
 
 
+<h4>{{ dataset_path }}</h4>
+<a href="{% url 'file_explorer' path=dataset_path %}">Explore this dataset</a>
 
-<h1>{{ dataset_path }}</h1>
+<h5>{{ display_path }}</h5>
 <hr>
 <div class="row">
     <div class="col col-sm-7">
