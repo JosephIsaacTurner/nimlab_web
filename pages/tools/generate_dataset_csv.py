@@ -23,15 +23,19 @@ def get_big_query(dataset_path):
     unique_stat_combinations = f"""
     SELECT DISTINCT statistic, coordinate_system, hemisphere, connectome
     FROM data_archives
+    left join datasets
+    on datasets.id = data_archives.dataset_id
     WHERE type = 'connectivity'
     AND dataset_path = '{dataset_path}'
     """
-
+    
     unique_roi_combinations = f"""
-    SELECT DISTINCT coordinate_system, hemisphere
-    FROM data_archives
-    WHERE type = 'roi'
-    AND dataset_path = '{dataset_path}'
+        SELECT DISTINCT coordinate_system, hemisphere
+            FROM data_archives
+            left join datasets
+            on datasets.id = data_archives.dataset_id
+            WHERE type = 'roi'
+            AND datasets.dataset_path = '{dataset_path}'
     """
 
     roi_ctes = []
