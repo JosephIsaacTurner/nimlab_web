@@ -14,63 +14,59 @@
   <div class="container">
     <hr>
     <div class="col-md-12">
-        <h2 class="text-center mx-auto lead display-6">Dataset File Explorer</h2>
-        <p class="lead">Root Directory: <a href="{% url 'file_explorer' path='' %}">{{ root_dir }}/</a></p>
-        <p class="lead">Working Directory: {{ display_path }}</p>
+      <h2 class="text-center mx-auto lead display-6">Dataset File Explorer</h2>
+      <p class="lead">Root Directory: <a href="{% url 'file_explorer' path='' %}">{{ root_dir }}/</a></p>
+      <p class="lead">Working Directory: {{ display_path }}</p>
 
-        {% if not path %}
-<!-- We are at the root directory, show only top-level directories -->
-<div class="container mt-4">
-  
-
-  <h2 class="mb-3">Datasets:</h2>
-  <p>Note that downloadable CSVs are currently unavailable for datasets that are not BIDS compatible</p>
-  <table class="table table-hover">
-      <thead>
-          <tr>
+      {% if not path %}
+      <!-- We are at the root directory, show only top-level directories -->
+      <div class="container mt-4">
+        <h2 class="mb-3">Datasets:</h2>
+        <p>Note that downloadable CSVs are currently unavailable for datasets that are not BIDS compatible</p>
+        <table class="table table-hover">
+          <thead>
+            <tr>
               <th scope="col">Directory Name</th>
               <th scope="col">Actions</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for directory, info in directory_info.items %}
-              <tr>
-                  <td>{{ info.dataset_name }}/</td>
-                  <td>
-                      <!-- Explore Files Button -->
-                      <a href="{% url 'file_explorer' path=info.dataset_name|add:'/' %}" class="btn btn-outline-secondary btn-sm me-2">
-                          <i class="fas fa-folder-open me-2"></i>Explore Files
-                      </a>
-                      <!-- Download CSV Button -->
-                      <!-- Assuming you have a similar URL pattern for downloading CSV for directories -->
-                      {% if info.in_database %}
-                      <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:info.dataset_name %}" class="btn btn-outline-primary btn-sm">
-                          <i class="fas fa-download me-2"></i>Download CSV
-                      </a>
-                      {% endif %}
-                  </td>
-              </tr>
-          {% endfor %}
-      </tbody>
-  </table>
-</div>
+            </tr>
+          </thead>
+          <tbody>
+            {% for directory, info in directory_info.items %}
+            <tr>
+              <td>{{ info.dataset_name }}/</td>
+              <td>
+                <!-- Explore Files Button -->
+                <a href="{% url 'file_explorer' path=info.dataset_name|add:'/' %}" class="btn btn-outline-secondary btn-sm me-2">
+                  <i class="fas fa-folder-open me-2"></i>Explore Files
+                </a>
+                <!-- Download CSV Button -->
+                {% if info.in_database %}
+                <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:info.dataset_name %}" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-download me-2"></i>Download CSV
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <!-- Inside a subdirectory -->
+      <div class="mt-3">
+        {% with clean_path=display_path|slice:":-1" %}
+        <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:clean_path %}" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-download me-2"></i>Download Dataset CSV
+        </a>
+        {% endwith %}
+      </div>
+      <br><br>
+      <!-- Recursive directory contents -->
+      {% include "includes/directory_structure.html" with contents=contents path=path prefix=path %}
+      {% endif %} <!-- Closes the else clause for if not path -->
 
-        {% else %}
-            <!-- create a "download csv" button for the directory based on the path we are in-->
-            <div class="mt-3">
-              {% with clean_path=display_path|slice:":-1" %}
-                <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:clean_path %}" class="btn btn-outline-primary btn-sm">
-              {% endwith %}
-                <i class="fas fa-download me-2"></i>Download Dataset CSV
-              </a>
-            </div>
-            <br>
-            <br>
-            <!-- We are inside a subdirectory, show contents recursively -->
-            {% include "includes/directory_structure.html" with contents=contents path=path prefix=path %}
-        {% endif %}
     </div>
   </div>
-{% endif %}
+{% endif %} <!-- Closes the else clause for if empty_directory -->
 
 {% endblock content %}
