@@ -2,6 +2,9 @@ from django.shortcuts import render
 from pages.forms import DatasetSearchForm
 from pages.models import Dataset
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def search_datasets(request):
     # Initialize the form and result set
     form = DatasetSearchForm(request.GET or None)

@@ -64,6 +64,9 @@ def get_directory_contents(path):
         pass
     return contents
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def file_explorer(request, path=''):
     root_dir = 'published_datasets'
     base_dir = os.path.join(settings.STATICFILES_DIRS[0], root_dir)
