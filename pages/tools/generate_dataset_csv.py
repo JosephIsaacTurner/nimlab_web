@@ -1,164 +1,417 @@
-import os
-# import hashlib
-import numpy as np
 import pandas as pd
-from bids import BIDSLayout
+from django.db import connection
 
-FSL_MNI152_2MM_AFFINE = np.array(
-    [
-        [-2.0, 0.0, 0.0, 90.0],
-        [0.0, 2.0, 0.0, -126.0],
-        [0.0, 0.0, 2.0, -72.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]
+query = """
+WITH dataset_path_cte AS (
+    SELECT id
+    FROM datasets
+    WHERE dataset_path = '$$dataset_path$$'
+),
+roi_2mm AS (
+    SELECT
+        da.file_path as roi_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'roi'
+    AND da.coordinate_system = '2mm'
+),
+roi_1mm AS (
+    SELECT
+        da.file_path as roi_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'roi'
+    AND da.coordinate_system = '1mm'
+),
+roi_original AS (
+    SELECT
+        da.file_path as roi_original,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'roi'
+    AND da.coordinate_system = 'original'
+),
+avgRFz_2mm AS (
+    SELECT
+        da.file_path as avgRFz_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'avgRFz'
+    AND da.coordinate_system = '2mm'
+),
+avgR_2mm AS (
+    SELECT
+        da.file_path as avgR_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'avgR'
+    AND da.coordinate_system = '2mm'
+),
+t_stat_2mm AS (
+    SELECT
+        da.file_path as t_stat_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 't'
+    AND da.coordinate_system = '2mm'
+),
+avgRFz_1mm AS (
+    SELECT
+        da.file_path as avgRFz_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'avgRFz'
+    AND da.coordinate_system = '1mm'
+),
+avgR_1mm AS (
+    SELECT
+        da.file_path as avgR_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'avgR'
+    AND da.coordinate_system = '1mm'
+),
+t_stat_1mm AS (
+    SELECT
+        da.file_path as t_stat_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 't'
+    AND da.coordinate_system = '1mm'
+),
+surfLhAvgRFz_2mm AS (
+    SELECT
+        da.file_path as surfLhAvgRFz_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfLhAvgRFz'
+    AND da.coordinate_system = '2mm'
+),
+strucSeed_2mm AS (
+    SELECT
+        da.file_path as strucSeed_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'strucSeed'
+    AND da.coordinate_system = '2mm'
+),
+surfRhAvgRFz_2mm AS (
+    SELECT
+        da.file_path as surfRhAvgRFz_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfRhAvgRFz'
+    AND da.coordinate_system = '2mm'
+),
+varR_2mm AS (
+    SELECT
+        da.file_path as varR_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'varR'
+    AND da.coordinate_system = '2mm'
+),
+surfLhAvgR_2mm AS (
+    SELECT
+        da.file_path as surfLhAvgR_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfLhAvgR'
+    AND da.coordinate_system = '2mm'
+),
+surfRhAvgR_2mm AS (
+    SELECT
+        da.file_path as surfRhAvgR_2mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfRhAvgR'
+    AND da.coordinate_system = '2mm'
+),
+surfLhAvgRFz_1mm AS (
+    SELECT
+        da.file_path as surfLhAvgRFz_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfLhAvgRFz'
+    AND da.coordinate_system = '1mm'
+),
+strucSeed_1mm AS (
+    SELECT
+        da.file_path as strucSeed_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'strucSeed'
+    AND da.coordinate_system = '1mm'
+),
+surfRhAvgRFz_1mm AS (
+    SELECT
+        da.file_path as surfRhAvgRFz_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfRhAvgRFz'
+    AND da.coordinate_system = '1mm'
+),
+varR_1mm AS (
+    SELECT
+        da.file_path as varR_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'varR'
+    AND da.coordinate_system = '1mm'
+),
+surfLhAvgR_1mm AS (
+    SELECT
+        da.file_path as surfLhAvgR_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfLhAvgR'
+    AND da.coordinate_system = '1mm'
+),
+surfRhAvgR_1mm AS (
+    SELECT
+        da.file_path as surfRhAvgR_1mm,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfRhAvgR'
+    AND da.coordinate_system = '1mm'
+),
+
+
+surfLhAvgRFz_fs5 AS (
+    SELECT
+        da.file_path as surfLhAvgRFz_fs5,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfLhAvgRFz'
+    AND da.coordinate_system = 'fs5'
+),
+strucSeed_fs5 AS (
+    SELECT
+        da.file_path as strucSeed_fs5,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'strucSeed'
+    AND da.coordinate_system = 'fs5'
+),
+surfRhAvgRFz_fs5 AS (
+    SELECT
+        da.file_path as surfRhAvgRFz_fs5,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfRhAvgRFz'
+    AND da.coordinate_system = 'fs5'
+),
+varR_fs5 AS (
+    SELECT
+        da.file_path as varR_fs5,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'varR'
+    AND da.coordinate_system = 'fs5'
+),
+surfLhAvgR_fs5 AS (
+    SELECT
+        da.file_path as surfLhAvgR_fs5,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfLhAvgR'
+    AND da.coordinate_system = 'fs5'
+),
+surfRhAvgR_fs5 AS (
+    SELECT
+        da.file_path as surfRhAvgR_fs5,
+        s.id as subject_id
+    FROM subjects s
+    LEFT JOIN data_archives da ON da.subject_id = s.id
+    INNER JOIN dataset_path_cte d ON d.id = s.dataset_id
+    WHERE da.type = 'connectivity'
+    AND da.statistic = 'surfRhAvgR'
+    AND da.coordinate_system = 'fs5'
 )
 
-FSL_MNI152_1MM_AFFINE = np.array(
-    [
-        [-1.0, 0.0, 0.0, 90.0],
-        [0.0, 1.0, 0.0, -126.0],
-        [0.0, 0.0, 1.0, -72.0],
-        [0.0, 0.0, 0.0, 1.0],
-    ]
-)
+select * from (
+SELECT
+    s.id as subject_id,
+    s.subject as subject_name,
+    roi_2mm.roi_2mm,
+    roi_1mm.roi_1mm,
+    roi_original.roi_original,
+    avgRFz_2mm.avgRFz_2mm,
+    avgR_2mm.avgR_2mm,
+    t_stat_2mm.t_stat_2mm,
+    avgRFz_1mm.avgRFz_1mm,
+    avgR_1mm.avgR_1mm,
+    t_stat_1mm.t_stat_1mm,
+    surfLhAvgRFz_2mm.surfLhAvgRFz_2mm,
+    strucSeed_2mm.strucSeed_2mm,
+    surfRhAvgRFz_2mm.surfRhAvgRFz_2mm,
+    varR_2mm.varR_2mm,
+    surfLhAvgR_2mm.surfLhAvgR_2mm,
+    surfRhAvgR_2mm.surfRhAvgR_2mm,
+    surfLhAvgRFz_1mm.surfLhAvgRFz_1mm,
+    strucSeed_1mm.strucSeed_1mm,
+    surfRhAvgRFz_1mm.surfRhAvgRFz_1mm,
+    varR_1mm.varR_1mm,
+    surfLhAvgR_1mm.surfLhAvgR_1mm,
+    surfRhAvgR_1mm.surfRhAvgR_1mm,
+    surfLhAvgRFz_fs5.surfLhAvgRFz_fs5,
+    strucSeed_fs5.strucSeed_fs5,
+    surfRhAvgRFz_fs5.surfRhAvgRFz_fs5,
+    varR_fs5.varR_fs5,
+    surfLhAvgR_fs5.surfLhAvgR_fs5,
+    surfRhAvgR_fs5.surfRhAvgR_fs5
+FROM subjects s
+LEFT JOIN roi_2mm ON roi_2mm.subject_id = s.id
+LEFT JOIN roi_1mm ON roi_1mm.subject_id = s.id
+LEFT JOIN roi_original ON roi_original.subject_id = s.id
+LEFT JOIN avgRFz_2mm ON avgRFz_2mm.subject_id = s.id
+LEFT JOIN avgR_2mm ON avgR_2mm.subject_id = s.id
+LEFT JOIN t_stat_2mm ON t_stat_2mm.subject_id = s.id
+LEFT JOIN avgRFz_1mm ON avgRFz_1mm.subject_id = s.id
+LEFT JOIN avgR_1mm ON avgR_1mm.subject_id = s.id
+LEFT JOIN t_stat_1mm ON t_stat_1mm.subject_id = s.id
+LEFT JOIN surfLhAvgRFz_2mm ON surfLhAvgRFz_2mm.subject_id = s.id
+LEFT JOIN strucSeed_2mm ON strucSeed_2mm.subject_id = s.id
+LEFT JOIN surfRhAvgRFz_2mm ON surfRhAvgRFz_2mm.subject_id = s.id
+LEFT JOIN varR_2mm ON varR_2mm.subject_id = s.id
+LEFT JOIN surfLhAvgR_2mm ON surfLhAvgR_2mm.subject_id = s.id
+LEFT JOIN surfRhAvgR_2mm ON surfRhAvgR_2mm.subject_id = s.id
+LEFT JOIN surfLhAvgRFz_1mm ON surfLhAvgRFz_1mm.subject_id = s.id
+LEFT JOIN strucSeed_1mm ON strucSeed_1mm.subject_id = s.id
+LEFT JOIN surfRhAvgRFz_1mm ON surfRhAvgRFz_1mm.subject_id = s.id
+LEFT JOIN varR_1mm ON varR_1mm.subject_id = s.id
+LEFT JOIN surfLhAvgR_1mm ON surfLhAvgR_1mm.subject_id = s.id
+LEFT JOIN surfRhAvgR_1mm ON surfRhAvgR_1mm.subject_id = s.id
+LEFT JOIN surfLhAvgRFz_fs5 ON surfLhAvgRFz_fs5.subject_id = s.id
+LEFT JOIN strucSeed_fs5 ON strucSeed_fs5.subject_id = s.id
+LEFT JOIN surfRhAvgRFz_fs5 ON surfRhAvgRFz_fs5.subject_id = s.id
+LEFT JOIN varR_fs5 ON varR_fs5.subject_id = s.id
+LEFT JOIN surfLhAvgR_fs5 ON surfLhAvgR_fs5.subject_id = s.id
+LEFT JOIN surfRhAvgR_fs5 ON surfRhAvgR_fs5.subject_id = s.id
 
-FSAVERAGE_SHAPES = {"fs5": (10242,), "fs6": (40962,), "fs7": (163842,)}
+WHERE roi_2mm.roi_2mm IS NOT NULL 
+   OR roi_1mm.roi_1mm IS NOT NULL 
+   OR roi_original.roi_original IS NOT NULL 
+   OR avgRFz_2mm.avgRFz_2mm IS NOT NULL
+   OR avgR_2mm.avgR_2mm IS NOT NULL
+   OR t_stat_2mm.t_stat_2mm IS NOT NULL
+   OR avgRFz_1mm.avgRFz_1mm IS NOT NULL
+   OR avgR_1mm.avgR_1mm IS NOT NULL
+   OR t_stat_1mm.t_stat_1mm IS NOT NULL
+   OR surfLhAvgRFz_2mm.surfLhAvgRFz_2mm IS NOT NULL
+   OR strucSeed_2mm.strucSeed_2mm IS NOT NULL
+   OR surfRhAvgRFz_2mm.surfRhAvgRFz_2mm IS NOT NULL
+   OR varR_2mm.varR_2mm IS NOT NULL
+   OR surfLhAvgR_2mm.surfLhAvgR_2mm IS NOT NULL
+   OR surfRhAvgR_2mm.surfRhAvgR_2mm IS NOT NULL
+   OR surfLhAvgRFz_1mm.surfLhAvgRFz_1mm IS NOT NULL
+   OR strucSeed_1mm.strucSeed_1mm IS NOT NULL
+   OR surfRhAvgRFz_1mm.surfRhAvgRFz_1mm IS NOT NULL
+   OR varR_1mm.varR_1mm IS NOT NULL
+   OR surfLhAvgR_1mm.surfLhAvgR_1mm IS NOT NULL
+   OR surfRhAvgR_1mm.surfRhAvgR_1mm IS NOT NULL
+   OR surfLhAvgRFz_fs5.surfLhAvgRFz_fs5 IS NOT NULL
+   OR strucSeed_fs5.strucSeed_fs5 IS NOT NULL
+   OR surfRhAvgRFz_fs5.surfRhAvgRFz_fs5 IS NOT NULL
+   OR varR_fs5.varR_fs5 IS NOT NULL
+   OR surfLhAvgR_fs5.surfLhAvgR_fs5 IS NOT NULL
+   OR surfRhAvgR_fs5.surfRhAvgR_fs5 IS NOT null) as sub_q_1;
+"""
 
-FSAVERAGE_NAMES = {
-    "fs5": "fsaverage5",
-    "fs6": "fsaverage6",
-    "fs7": "fsaverage7",
-}
 
-
-# def hash_file(path):
-#     hasher = hashlib.md5()
-#     with open(path, "rb") as afile:
-#         buf = afile.read()
-#         hasher.update(buf)
-#     return hasher.hexdigest()
-
-def generate_dataset_csv(project_path, project_name, vol_spaces, surf_spaces, lesion_type):
-    """
-    Generate ready-to-use csv within the dataset for safety.
-    """
-
-    # Default values for entities
-    defaults = {
-        "coordinateSystem": "2mm",
-        "hemisphere": "L",
-    }
-
-    # Load BIDSLayout and dataframe
-    parent_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(parent_dir, 'connectivity_config.json')
+def generate_dataset_csv(dataset_path):
+    # Replace the placeholder with the actual dataset path in the SQL query
+    formatted_query = query.replace('$$dataset_path$$', dataset_path)
     
-    archive_df = BIDSLayout(
-        project_path,
-        validate=False,
-        config=config_path,
-    ).to_df()
-    
-    # Apply default values to the dataframe
-    for key, value in defaults.items():
-        if key not in archive_df.columns:
-            archive_df[key] = value
-        else:
-            archive_df[key].fillna(value, inplace=True)
-    
-    # Filter files with statistics and valid extensions
-    conn_files = archive_df[
-        (~archive_df["statistic"].isna())
-        & archive_df["extension"].isin([
-            ".nii.gz", ".gii", ".mat", ".trk.gz", ".connectivity.mat",
-            ".txt", ".connectogram.txt", ".node", ".edge", ".trk.gz.tdi.nii.gz"
-        ])
-    ]
-    print(archive_df.columns)
-    print(conn_files.columns)
-    print(conn_files["statistic"].unique())
-    print(conn_files)
-    conn_csv = pd.DataFrame()
-    conn_csv["dataset"] = [project_name] * len(conn_files["subject"].unique())
-    conn_csv["subject"] = conn_files["subject"].unique()
+    # Use Django database connection to execute the raw SQL and fetch the result as a DataFrame
+    with connection.cursor() as cursor:
+        cursor.execute(formatted_query)
+        rows = cursor.fetchall()
+        # Assuming you have the column names
+        columns = [col[0] for col in cursor.description]
+        df = pd.DataFrame(rows, columns=columns)
 
-    # Get original ROI columns
-    if lesion_type == "volume":
-        conn_csv["orig_roi_vol"] = list(
-            archive_df["path"][
-                (archive_df["datatype"] == "roi")
-                & (
-                    (archive_df["extension"] == ".nii.gz")
-                    | (archive_df["extension"] == ".gii")
-                )
-                & (archive_df["coordinateSystem"] == "original")
-            ]
-        )
-    elif lesion_type == "surface":
-        conn_csv["orig_roi_surf_lh"] = list(
-            archive_df["path"][
-                (archive_df["datatype"] == "roi")
-                & (
-                    (archive_df["extension"] == ".nii.gz")
-                    | (archive_df["extension"] == ".gii")
-                )
-                & (archive_df["coordinateSystem"] == "original")
-                & (archive_df["hemisphere"] == "L")
-            ]
-        )
-        conn_csv["orig_roi_surf_rh"] = list(
-            archive_df["path"][
-                (archive_df["datatype"] == "roi")
-                & (
-                    (archive_df["extension"] == ".nii.gz")
-                    | (archive_df["extension"] == ".gii")
-                )
-                & (archive_df["coordinateSystem"] == "original")
-                & (archive_df["hemisphere"] == "R")
-            ]
-        )
+    # Exclude columns from the DataFrame that are entirely Null/None
+    df = df.dropna(axis='columns', how='all')
 
-    # Get resliced/resampled ROI columns
-    for space in vol_spaces["input"]:
-        conn_csv[f"roi_{space}"] = list(
-            archive_df["path"][
-                (archive_df["datatype"] == "roi")
-                & (archive_df["extension"] == ".nii.gz")
-                & (archive_df["coordinateSystem"] == space)
-            ]
-        )
-    for space in surf_spaces["input"]:
-        for hemisphere in ["L", "R"]:
-            conn_csv[f"roi_{space}_{hemisphere}"] = list(
-                archive_df["path"][
-                    (archive_df["datatype"] == "roi")
-                    & (archive_df["extension"] == ".gii")
-                    & (archive_df["coordinateSystem"] == space)
-                    & (archive_df["hemisphere"] == hemisphere)
-                ]
-            )
+    # Finally, save the DataFrame as a CSV file
+    df.to_csv('dataset.csv', index=False)
 
-    for s in conn_files["statistic"].unique():
-        files = list(
-            conn_files["path"][
-                (conn_files["statistic"] == s) & (conn_files["extension"] != ".json")
-            ]
-        )
-        conn_csv[s] = files
-
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Define the path for the new csv file within the script's directory
-    csv_file_path = os.path.join(script_dir, f"{project_name}_filelist.csv")
-
-    # Write the DataFrame to a CSV file in the script's directory
-    conn_csv.to_csv(csv_file_path, index=False)
-
-if __name__ == "__main__":
-    
-    project_path = "/app/static/published_datasets/joutsa_2022_nature_medicine_addiction_remission_rochester_lesions_yeo1000/"
-    project_name = "juho_addiction_rochester_lesions_yeo1000"
-    vol_spaces = {"input": ["2mm"], "output": ["2mm"]}
-    surf_spaces = {"input": ["fs5"], "output": ["fs5"]}
-    lesion_type = "volume" # or surface
-    generate_dataset_csv(project_path, project_name, vol_spaces, surf_spaces, lesion_type)
-    print("done")
+if __name__ == '__main__':
+    path = "/published_datasets/joutsa_2022_nature_medicine_addiction_remission_iowa_lesions"
+    generate_dataset_csv(path)
