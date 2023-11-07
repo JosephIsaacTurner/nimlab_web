@@ -410,7 +410,8 @@ def generate_dataset_csv(request,
 
     # Convert DataFrame to CSV
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
+    dataset_name = dataset_path.replace("/published_datasets/","")
+    response['Content-Disposition'] = f'attachment; filename="{dataset_name}_dataset.csv"'
 
     # Write the CSV data to the response object
     df.to_csv(path_or_buf=response, index=False)
