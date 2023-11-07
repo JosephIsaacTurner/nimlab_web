@@ -66,22 +66,28 @@
 {% endif %}
 
 {% if results %}
-    <p class="h3 lead">Results:</p>
-    <ul>
-        {% for dataset in results %}
-            <li>
-                <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}">
-                    {{ dataset.dataset_name }} ({{ dataset.dataset_path }})
-                </a>
-                <!-- Button for CSV download -->
-                &nbsp;&nbsp;&nbsp;
-                <a href="{% url 'generate_csv' dataset_path=dataset.dataset_path %}" class="btn btn-primary btn-sm" role="button">
-                    <i class="fas fa-file-csv"></i> Download CSV
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="container mt-4">
+        <h2 class="mb-3">Results:</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for dataset in results %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ dataset.dataset_name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ dataset.dataset_path }}</h6>
+                            <p class="card-text">Some additional information about the dataset could go here.</p>
+                            <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}" class="card-link">Explore Files</a>
+                            <a href="{% url 'generate_csv' dataset_path=dataset.dataset_path %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-download me-2"></i>Download CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
+
 
 
 
