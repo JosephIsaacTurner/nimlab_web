@@ -27,3 +27,6 @@ whitenoise==6.5.0
 celery
 redis
 gunicorn
+pybids
+numpy
+pandas
