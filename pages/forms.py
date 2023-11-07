@@ -93,10 +93,10 @@ class DatasetSearchForm(forms.Form):
 
         # Search related models
         if self.cleaned_data['tag']:
-            # Assuming 'self.cleaned_data['tag']' is a list of tag names
-            datasets_with_tags = Dataset.objects.filter(
-                tags__tag__in=self.cleaned_data['tag']
-            ).distinct()
+            tag_query = Q()
+            for tag in self.cleaned_data['tag']:
+                tag_query |= Q(tags__in=[tag])
+            datasets = datasets.filter(tag_query)
         if self.cleaned_data['author_email']:
             author_email_query = Q()
             for author_email in self.cleaned_data['author_email']:
