@@ -2,14 +2,30 @@ import pandas as pd
 from django.shortcuts import HttpResponse
 from django.db import connection
 import re 
-# Define your queries
-unique_conn_types = """
+
+"""The goal of this script is to generate a CSV file containing all of the data for a given dataset
+The CSV file will have one row per subject and one column per data file
+To do this in a way that is robust across all datasets,
+We need to account for every possible combination of coordinate_system, hemisphere, statistic, and connectome
+This is done by dynamically generating the SQL query
+We start by fetching all of the unique combinations of coordinate_system, hemisphere, statistic, and connectome
+Then we build a CTE (common table expression) for each combination
+Each CTE contains the file_path and subject_id for all subjects that have that combination of coordinate_system, hemisphere, statistic, and connectome
+We then build the final query by joining all of the CTEs together
+The final query will have one row per subject and one column per file_path
+The file_path columns will be named according to the coordinate_system, hemisphere, statistic, and connectome
+The file_path columns will contain the full path to the file on the server
+The final query will be executed and all null columns will be dropped (Combinations of coordinate_system, hemisphere, statistic, and connectome that didn't exist in that dataset will be dropped)
+The results will be converted to a CSV file and returned to the user
+"""
+
+unique_stat_combinations = """
 SELECT DISTINCT statistic, coordinate_system, hemisphere, connectome
 FROM data_archives
 WHERE type = 'connectivity'
 """
 
-unique_roi_types = """
+unique_roi_combinations = """
 SELECT DISTINCT coordinate_system, hemisphere
 FROM data_archives
 WHERE type = 'roi'
@@ -22,7 +38,7 @@ roi_wheres = []
 
 # Use a with statement to ensure the cursor is closed after use
 with connection.cursor() as cursor:
-    cursor.execute(unique_roi_types)
+    cursor.execute(unique_roi_combinations)
     unique_roi_rows = cursor.fetchall()
 
 # Iterate over the fetched results
@@ -66,11 +82,11 @@ stat_wheres = []
 
 # Fetch the unique connection types in a similar way
 with connection.cursor() as cursor:
-    cursor.execute(unique_conn_types)
-    unique_conn_rows = cursor.fetchall()
+    cursor.execute(unique_stat_combinations)
+    unique_stat_rows = cursor.fetchall()
 
 # Iterate over the fetched results
-for statistic, coordinate_system, hemisphere, connectome in unique_conn_rows:
+for statistic, coordinate_system, hemisphere, connectome in unique_stat_rows:
     display_hemisphere = "" if hemisphere == "unknown" else hemisphere
     field_name = f"{statistic}_{coordinate_system}{display_hemisphere}_{connectome}"
     conn_cte = f"""
