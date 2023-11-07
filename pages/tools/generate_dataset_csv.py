@@ -1,7 +1,7 @@
 import pandas as pd
 from django.shortcuts import HttpResponse
 from django.db import connection
-
+import re 
 # Define your queries
 unique_conn_types = """
 SELECT DISTINCT statistic, coordinate_system, hemisphere, connectome
@@ -105,16 +105,19 @@ for statistic, coordinate_system, hemisphere, connectome in unique_conn_rows:
     """
     stat_wheres.append(stat_where)
 
-# Build the common table expressions (CTEs) without the final comma
+# Function to remove last comma and any trailing whitespace
+def remove_trailing_comma_and_whitespace(string):
+    # This regular expression looks for a comma followed by any amount of whitespace
+    # at the end of the string and replaces it with an empty string
+    return re.sub(r',\s*$', '', string)
+
+# Build the common table expressions (CTEs) without the final comma and trailing whitespace
 cte_combined = "".join(roi_ctes) + "".join(stat_ctes)
-if cte_combined.endswith(','):
-    cte_combined = cte_combined[:-1]  # Remove the last comma
+cte_combined = remove_trailing_comma_and_whitespace(cte_combined)
 
-# Build the select statements without the final comma
+# Build the select statements without the final comma and trailing whitespace
 select_combined = "".join(roi_selects) + "".join(stat_selects)
-if select_combined.endswith(','):
-    select_combined = select_combined[:-1]  # Remove the last comma
-
+select_combined = remove_trailing_comma_and_whitespace(select_combined)
 # Combine everything into the final big query
 big_query = f"""
 WITH dataset_path_cte AS (
