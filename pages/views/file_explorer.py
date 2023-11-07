@@ -108,9 +108,10 @@ def file_explorer(request, path=''):
             # Construct the full path to match with dataset_path in the database
             full_directory_path = os.path.join(path, directory) if path else directory
             # Query the database to check if the directory corresponds to a dataset_path
-            in_database = Dataset.objects.filter(dataset_path=full_directory_path).exists()
+            test_path = "/published_datasets/" + full_directory_path
+            in_database = Dataset.objects.filter(dataset_path=test_path).exists()
             # Get the dataset name if in the database, else use the directory name
-            dataset_name = Dataset.objects.get(dataset_path=full_directory_path).dataset_name if in_database else directory
+            dataset_name = Dataset.objects.get(dataset_path=test_path).dataset_path if in_database else directory
             
             # Update the directory info dictionary
             directory_info[directory] = {
