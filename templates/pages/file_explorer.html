@@ -54,7 +54,7 @@
         {% else %}
             <!-- create a "download csv" button for the directory based on the path we are in-->
             <div class="mt-3">
-              <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:path %}" class="btn btn-outline-primary btn-sm">
+              <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:display_path %}" class="btn btn-outline-primary btn-sm">
                   <i class="fas fa-download me-2"></i>Download Dataset CSV
               </a>
             </div>
