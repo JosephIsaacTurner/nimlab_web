@@ -2,6 +2,8 @@ import os
 from django.conf import settings
 from django.http import FileResponse, Http404
 from django.shortcuts import render
+from django.db.models import Q
+from pages.models import Dataset
 
 # def file_explorer(request, path=''):
     # This function is used to view files in the browser
@@ -98,6 +100,27 @@ def file_explorer(request, path=''):
     # Sort the 'files' and 'directories' arrays alphabetically
     sorted_files = sorted(contents['files'])
     sorted_directories = sorted(contents['directories'])
+    if not path:
+        # Create a dictionary with directory names as keys and another dictionary with dataset_name and in_database as values
+        directory_info = {}
+
+        for directory in sorted_directories:
+            # Construct the full path to match with dataset_path in the database
+            full_directory_path = os.path.join(path, directory) if path else directory
+            # Query the database to check if the directory corresponds to a dataset_path
+            in_database = Dataset.objects.filter(dataset_path=full_directory_path).exists()
+            # Get the dataset name if in the database, else use the directory name
+            dataset_name = Dataset.objects.get(dataset_path=full_directory_path).dataset_name if in_database else directory
+            
+            # Update the directory info dictionary
+            directory_info[directory] = {
+                'dataset_name': dataset_name,
+                'in_database': in_database
+            }
+    else:
+        directory_info = None
+
+
 
     # Now, 'contents' contains the sorted lists
     sorted_contents = {
@@ -105,12 +128,14 @@ def file_explorer(request, path=''):
         'directories': sorted_directories
     }
 
+
     context = {
         'display_path': path if path else root_dir,
         'path': path,
         'contents': sorted_contents,
         'empty_directory': empty_directory,
-        'root_dir': root_dir
+        'root_dir': root_dir,
+        'directory_info': directory_info
     }
 
     return render(request, 'pages/file_explorer.html', context)
