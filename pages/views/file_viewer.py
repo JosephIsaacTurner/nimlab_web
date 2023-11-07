@@ -42,7 +42,8 @@ def file_viewer(request, path=''):
         "message": "hello world",
         "file_type": file_extension,
         "file_path": file_path,
-        "is_nifti": is_nifti
+        "is_nifti": is_nifti,
+        "dataset_path": path.split("/")[0]
     }
 
     return render(
