@@ -7,7 +7,9 @@ class Dataset(models.Model):
     DatasetType = models.CharField(max_length=255, blank=True, null=True)
     creation_date = models.CharField(max_length=255, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    dataset_path = models.CharField(max_length=255, blank=True, null=True)  # Renamed from directory_path
+    dataset_path = models.CharField(max_length=255, blank=True, null=True)
+
+    # No direct ForeignKey fields to Tag, Author, Contact anymore; they are defined in the related models
 
     class Meta:
         db_table = 'datasets'
@@ -15,30 +17,36 @@ class Dataset(models.Model):
     def __str__(self):
         return self.dataset_name
 
+# The Tag model now has a ManyToManyField linking it to Dataset
 class Tag(models.Model):
     tag = models.CharField(max_length=255, blank=True, null=True)
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='tags')
+    datasets = models.ManyToManyField(Dataset, related_name='tags', db_table='dataset_tag_association')
 
     class Meta:
         db_table = 'tags'
+
     def __str__(self):
         return self.tag
 
+# The Author model now has a ManyToManyField linking it to Dataset
 class Author(models.Model):
     author_email = models.CharField(max_length=255)
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='authors')
+    datasets = models.ManyToManyField(Dataset, related_name='authors', db_table='dataset_author_association')
 
     class Meta:
         db_table = 'authors'
+
     def __str__(self):
         return self.author_email
 
+# The Contact model now has a ManyToManyField linking it to Dataset
 class Contact(models.Model):
     contact_email = models.CharField(max_length=255)
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name='contacts')
+    datasets = models.ManyToManyField(Dataset, related_name='contacts', db_table='dataset_contact_association')
 
     class Meta:
         db_table = 'contacts'
+
     def __str__(self):
         return self.contact_email
 
