@@ -9,6 +9,6 @@ urlpatterns = [
     re_path(r'^file_explorer/(?P<path>.*)$', file_explorer, name='file_explorer'),
     re_path(r'^file_viewer/(?P<path>.*)$', file_viewer, name='file_viewer'),
     path("search_datasets/", search_datasets, name='search_datasets'),
-    path("generate_csv/", generate_dataset_csv, name='generate_csv'),
+    path("generate_csv/<path:dataset_path>/", generate_dataset_csv, name='generate_csv'),
 ]
 

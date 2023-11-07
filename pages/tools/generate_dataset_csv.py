@@ -393,8 +393,9 @@ WHERE roi_2mm.roi_2mm IS NOT NULL
    OR surfRhAvgR_fs5.surfRhAvgR_fs5 IS NOT null) as sub_q_1;
 """
 
-def generate_dataset_csv(request, 
-                         dataset_path="/published_datasets/joutsa_2022_nature_medicine_addiction_remission_iowa_lesions"):
+def generate_dataset_csv(request, dataset_path):
+    if dataset_path == '':
+        return HttpResponse('Dataset path not specified', status=400)
     # Replace the placeholder with the actual dataset path in the SQL query
     formatted_query = query.replace('$$dataset_path$$', dataset_path)
 
