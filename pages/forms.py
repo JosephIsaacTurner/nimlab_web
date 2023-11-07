@@ -2,8 +2,7 @@
 from django import forms
 from django.db.models import Q  # This is where you import Q
 from django.db import models
-from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo, NiftiImage
-
+from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo
 class DatasetSearchForm(forms.Form):
     dataset_id = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.all(),
