@@ -95,9 +95,22 @@ def file_explorer(request, path=''):
     if path:
         path = path.rstrip('/ ').rstrip() + '/'
 
+    # Sort the 'files' and 'directories' arrays alphabetically
+    sorted_files = sorted(contents['files'])
+    sorted_directories = sorted(contents['directories'])
+
+    # Now, 'contents' contains the sorted lists
+    sorted_contents = {
+        'files': sorted_files,
+        'directories': sorted_directories
+    }
+
     context = {
         'display_path': path if path else root_dir,
-        'path': path, 'contents': contents, 'empty_directory': empty_directory,
+        'path': path,
+        'contents': sorted_contents,
+        'empty_directory': empty_directory,
         'root_dir': root_dir
     }
+
     return render(request, 'pages/file_explorer.html', context)
