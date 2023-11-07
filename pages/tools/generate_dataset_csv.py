@@ -54,10 +54,10 @@ for coordinate_system, hemisphere in unique_roi_rows:
     """
     roi_joins.append(roi_join)
 
-    roi_wheres = f"""
+    roi_where = f"""
         {field_name}.{field_name} IS NOT NULL
     """
-    roi_wheres.append(roi_wheres)
+    roi_wheres.append(roi_where)
 
 stat_ctes = []
 stat_selects = []
