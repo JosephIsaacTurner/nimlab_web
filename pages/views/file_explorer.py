@@ -111,7 +111,7 @@ def file_explorer(request, path=''):
             test_path = "/published_datasets/" + full_directory_path
             in_database = Dataset.objects.filter(dataset_path=test_path).exists()
             # Get the dataset name if in the database, else use the directory name
-            dataset_name = Dataset.objects.get(dataset_path=test_path).dataset_path.replace("/published_datasets/") if in_database else directory
+            dataset_name = Dataset.objects.get(dataset_path=test_path).dataset_path.replace("/published_datasets/","") if in_database else directory
             
             # Update the directory info dictionary
             directory_info[directory] = {
