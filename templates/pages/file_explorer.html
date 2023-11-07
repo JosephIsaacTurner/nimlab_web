@@ -55,7 +55,7 @@
       <!-- Inside a subdirectory -->
       <div class="mt-3">
         {% for file in contents.files %}
-            <li><a href="{% url 'file_viewer' path=file' %}">{{ file }}/</a></li>
+            <li><a href="{% url 'file_viewer' path=file %}">{{ file }}/</a></li>
         {% endfor %}
         <br>
 
