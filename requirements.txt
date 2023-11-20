@@ -30,3 +30,4 @@ gunicorn
 pybids
 numpy
 pandas
+markdown

@@ -4,6 +4,7 @@ from django.http import FileResponse, Http404
 from django.shortcuts import render
 from django.db.models import Q
 from pages.models import Dataset
+import markdown
 
 # def file_explorer(request, path=''):
     # This function is used to view files in the browser
@@ -138,8 +139,8 @@ def file_explorer(request, path=''):
         'download_csv': download_csv,
         'display_path': path if path else root_dir,
         'path': path,
-        'contents': contents,
-        'sorted_contents': sorted_contents,
+        # 'contents': contents,
+        'contents': sorted_contents,
         'empty_directory': empty_directory,
         'root_dir': root_dir,
         'directory_info': directory_info
