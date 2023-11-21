@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.db.models import Q
 from pages.models import Dataset
 import markdown
+import json
 
 # def file_explorer(request, path=''):
     # This function is used to view files in the browser
@@ -47,7 +48,7 @@ import markdown
 
 def get_directory_contents(path):
     # This recursive helper function fetches contents of the given directory, excluding dotfiles/directories
-    contents = {'files': [], 'directories': {}}
+    contents = {'files': [], 'directories': {}, 'text_content':{}}
     try:
         with os.scandir(path) as it:
             for entry in it:
@@ -55,8 +56,20 @@ def get_directory_contents(path):
                     # Skip dotfiles and hidden directories
                     continue
                 if entry.is_file():
-                    # append file name
-                    contents['files'].append(entry.name)
+                    # Check the file extension and read the content if it's .txt, .md, or .json
+                    if entry.name.endswith(('.txt', '.md', '.json')):
+                        with open(entry.path, 'r', encoding='utf-8') as file:
+                            if entry.name.endswith('.json'):
+                                # Parse and store the JSON data
+                                file_content = json.dumps(json.load(file), indent=4, sort_keys=True)
+                            else:
+                                # Read the content of the file for .txt and .md
+                                file_content = file.read()
+                            # contents['files'].append(file_content)
+                            contents['text_content'][entry.name] = file_content
+                    else:
+                        # If the file does not have one of the specified extensions, just append the file name
+                        contents['files'].append(entry.name)
                 elif entry.is_dir():
                     # recurse into directory
                     contents['directories'][entry.name] = get_directory_contents(entry.path)
@@ -102,7 +115,7 @@ def file_explorer(request, path=''):
         path = path.rstrip('/ ').rstrip() + '/'
 
     # Sort the 'files' and 'directories' arrays alphabetically
-    sorted_files = sorted(contents['files'])
+    # sorted_files = sorted(contents['files'])
     sorted_directories = sorted(contents['directories'])
     directory_info = {}
     if not path:
@@ -129,18 +142,17 @@ def file_explorer(request, path=''):
         else:
             download_csv = False
 
-    sorted_contents = {
-        'files': sorted_files,
-        'directories': sorted_directories
-    }
+    # sorted_contents = {
+    #     'files': sorted_files,
+    #     'directories': sorted_directories
+    # }
 
 
     context = {
         'download_csv': download_csv,
         'display_path': path if path else root_dir,
         'path': path,
-        # 'contents': contents,
-        'contents': sorted_contents,
+        'contents': contents,
         'empty_directory': empty_directory,
         'root_dir': root_dir,
         'directory_info': directory_info
