@@ -3,14 +3,7 @@
 {% block title %}About page{% endblock %}
 
 {% block content %}
-<h1>About page</h1>
-<pre>
-    <code>
-        {
-            "firstName": "John",
-            "lastName": "Doe",
-            "age": 30
-        }
-    </code>
-</pre>
+<div class="markdown-body">
+    {{ html_content|safe }}
+</div>
 {% endblock content %}
