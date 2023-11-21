@@ -24,7 +24,7 @@ USE_X_FORWARDED_PORT = True
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "172.22.74.101", 'http://172.22.74.101:8080', '172.22.74.101:8080']
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.0:8000','http://172.22.74.101:8080','http://172.22.74.101:8080', 'http://172.22.74.101','https://172.22.74.101:8080']
+CSRF_TRUSTED_ORIGINS = ['http://172.22.74.101:8080','http://172.22.74.101:8080', 'http://172.22.74.101','https://172.22.74.101:8080']
 # ALLOWED_HOSTS = ['*']  # Only for development; not recommended for production
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -94,27 +94,27 @@ TEMPLATES = [
 # }
 
 # For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "dataset_metadata",
-        "USER": "username",
-        "PASSWORD": "password",
-        "HOST": "postgres",  # Using service name of the postgres container from the docker-compose
-        "PORT": 5432,  # Inside the Docker network, you will connect to the original port of the Postgres container
-    }
-}
-## When running locally but you want to connect to the remote database, use this:
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
 #         "NAME": "dataset_metadata",
 #         "USER": "username",
 #         "PASSWORD": "password",
-#         "HOST": "172.22.74.101",  # Using service name of the postgres container from the docker-compose
-#         "PORT": 5435,  # Inside the Docker network, you will connect to the original port of the Postgres container
+#         "HOST": "postgres",  # Using service name of the postgres container from the docker-compose
+#         "PORT": 5432,  # Inside the Docker network, you will connect to the original port of the Postgres container
 #     }
 # }
+## When running locally but you want to connect to the remote database, use this:
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "dataset_metadata",
+        "USER": "username",
+        "PASSWORD": "password",
+        "HOST": "172.22.74.101",  # Using service name of the postgres container from the docker-compose
+        "PORT": 5435,  # Inside the Docker network, you will connect to the original port of the Postgres container
+    }
+}
 
 CELERY_BROKER_URL, CELERY_RESULT_BACKEND = (
     (f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0", f"redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/0") 
