@@ -9,7 +9,6 @@ __pycache__/
 # Django #
 *.log
 db.sqlite3
-media
 static/published_datasets
 media/published_datasets
 
