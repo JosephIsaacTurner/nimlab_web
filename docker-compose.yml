@@ -7,7 +7,8 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d  # Mount custom Nginx configuration directory
-      - /volume1/dataset_repo:/app/media/published_datasets
+      - volume1/remote_repo:/app/media/published_datasets
+      # - /volume1/dataset_repo:/app/media/published_datasets
       - /volume1/docker/app_source/nimlab_web/static:/app/static
       - /volume1/docker/app_source/nimlab_web/staticfiles:/app/staticfiles
       # Mount the static volume directly into Nginx to serve static content
@@ -21,7 +22,8 @@ services:
     command: gunicorn django_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
-      - /volume1/dataset_repo:/app/media/published_datasets
+      - volume1/remote_repo:/app/media/published_datasets
+      # - /volume1/dataset_repo:/app/media/published_datasets
     networks:
       - nimlab_docker_network
     environment:
@@ -36,7 +38,8 @@ services:
     command: celery -A django_project worker --loglevel=info  
     volumes:
       - .:/app  # Change this to match your Django project path if different
-      - /volume1/dataset_repo:/app/media/published_datasets
+      - volume1/remote_repo:/app/media/published_datasets
+      # - /volume1/dataset_repo:/app/media/published_datasets
       # - /volume1/Backups/nimlab/NIMLAB_DATABASE/published_datasets:/app/static/published_datasets
     depends_on:
       - redis
