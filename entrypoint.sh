@@ -12,6 +12,10 @@ echo "PostgreSQL started"
 echo "Applying database migrations"
 python manage.py migrate --noinput --fake-initial
 
+# Collect static files
+echo "Collecting static files"
+python manage.py collectstatic --noinput
+
 # Start Gunicorn server
 echo "Starting Gunicorn server"
 exec gunicorn --bind :8000 --workers 2 django_project.wsgi:application
