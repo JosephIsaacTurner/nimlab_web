@@ -11,6 +11,7 @@ __pycache__/
 db.sqlite3
 media
 static/published_datasets
+media/published_datasets
 
 # Virtual environment
 .venv

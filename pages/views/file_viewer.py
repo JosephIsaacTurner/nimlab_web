@@ -18,7 +18,7 @@ def file_viewer(request, path=''):
     # It checks to see if the file is a nifti file, and if so, it will display it in the browser
     # Otherwise, it will redirect to the file_explorer view
     root_dir = 'published_datasets'
-    base_dir = os.path.join(settings.STATICFILES_DIRS[0], root_dir)
+    base_dir = os.path.join(settings.MEDIA_ROOT, root_dir)
     
     # Construct the absolute path to the file
     file_path = os.path.join(base_dir, path)
