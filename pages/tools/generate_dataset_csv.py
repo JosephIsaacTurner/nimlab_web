@@ -168,11 +168,15 @@ def generate_dataset_csv(request, dataset_path):
     formatted_query = big_query.replace('$$dataset_path$$', dataset_path)
     # return HttpResponse(formatted_query, content_type='text/plain', status=200)
     # Execute the query and fetch data
-    with connection.cursor() as cursor:
-        cursor.execute(formatted_query)
-        rows = cursor.fetchall()
-        columns = [col[0] for col in cursor.description]
-        df = pd.DataFrame(rows, columns=columns)
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(big_query)
+            rows = cursor.fetchall()
+            columns = [col[0] for col in cursor.description]
+            df = pd.DataFrame(rows, columns=columns)
+    except Exception as e:
+        return HttpResponse(f"Error executing query: {str(e)}\nQuery: {big_query}", status=500)
 
     # Exclude columns that are entirely Null/None
     df = df.dropna(axis='columns', how='all')
