@@ -77,9 +77,10 @@ def get_directory_contents(path):
                         contents['files'].append(entry.name)
                 elif entry.is_dir():
                     # recurse into directory
-                    if any(substring.lower() in entry.name.lower() for substring in ["Grafman", "MGH","trash"]):
+                    if any(substring.lower() in entry.name.lower() for substring in ["grafman", "mgh","trash"]):
                         pass
-                    contents['directories'][entry.name] = get_directory_contents(entry.path)
+                    else:
+                        contents['directories'][entry.name] = get_directory_contents(entry.path)
     except PermissionError:
         # Handle any permissions errors
         pass
@@ -111,7 +112,13 @@ def file_explorer(request, path=''):
     # Decide what to display based on whether we're at the root directory
     if not path:
         # At the root, list only non-hidden subdirectories
-        directories = [d for d in os.listdir(full_path) if os.path.isdir(os.path.join(full_path, d)) and not d.startswith('.')]
+        excluded_substrings = ["grafman", "mgh", "trash"]
+        directories = [
+            d for d in os.listdir(full_path) 
+            if os.path.isdir(os.path.join(full_path, d)) 
+            and not d.startswith('.')
+            and all(substring.lower() not in d.lower() for substring in excluded_substrings)
+        ]
         contents = {'files': [], 'directories': {d: {} for d in directories}}
     else:
         # Not at the root, recursively list all contents
