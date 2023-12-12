@@ -178,6 +178,7 @@ def generate_dataset_csv(request, dataset_path):
     except Exception as e:
         return HttpResponse(f"Error executing query: {str(e)}\nQuery: {big_query}", status=500)
 
+
     # Exclude columns that are entirely Null/None
     df = df.dropna(axis='columns', how='all')
     
@@ -194,6 +195,7 @@ def generate_dataset_csv(request, dataset_path):
 
     # Write the CSV data to the response object
     df.to_csv(path_or_buf=response, index=False)
+    return HttpResponse(big_query, content_type='text/plain', status=200)
+    # return response
 
-    return response
 
