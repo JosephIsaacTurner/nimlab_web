@@ -171,12 +171,12 @@ def generate_dataset_csv(request, dataset_path):
     
     try:
         with connection.cursor() as cursor:
-            cursor.execute(big_query)
+            cursor.execute(formatted_query)
             rows = cursor.fetchall()
             columns = [col[0] for col in cursor.description]
             df = pd.DataFrame(rows, columns=columns)
     except Exception as e:
-        return HttpResponse(f"Error executing query: {str(e)}\nQuery: {big_query}", status=500)
+        return HttpResponse(f"Error executing query: {str(e)}\nQuery: {formatted_query}", status=500)
 
 
     # Exclude columns that are entirely Null/None
@@ -195,7 +195,7 @@ def generate_dataset_csv(request, dataset_path):
 
     # Write the CSV data to the response object
     df.to_csv(path_or_buf=response, index=False)
-    return HttpResponse(big_query, content_type='text/plain', status=200)
+    return HttpResponse(formatted_query, content_type='text/plain', status=200)
     # return response
 
 
