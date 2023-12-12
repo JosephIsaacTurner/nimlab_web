@@ -195,7 +195,7 @@ def generate_dataset_csv(request, dataset_path):
 
     # Write the CSV data to the response object
     df.to_csv(path_or_buf=response, index=False)
-    return HttpResponse(formatted_query, content_type='text/plain', status=200)
-    # return response
+    # return HttpResponse(formatted_query, content_type='text/plain', status=200)
+    return response
 
 
