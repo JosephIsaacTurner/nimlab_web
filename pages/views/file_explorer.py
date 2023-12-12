@@ -77,6 +77,8 @@ def get_directory_contents(path):
                         contents['files'].append(entry.name)
                 elif entry.is_dir():
                     # recurse into directory
+                    if any(substring.lower() in entry.name.lower() for substring in ["Grafman", "MGH","trash"]):
+                        pass
                     contents['directories'][entry.name] = get_directory_contents(entry.path)
     except PermissionError:
         # Handle any permissions errors
