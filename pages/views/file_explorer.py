@@ -60,12 +60,17 @@ def get_directory_contents(path):
                     if entry.name.endswith(('.txt', '.md', '.json')):
                         with open(entry.path, 'r', encoding='utf-8') as file:
                             if entry.name.endswith('.json'):
-                                # Parse and store the JSON data
-                                file_content = json.dumps(json.load(file), indent=4, sort_keys=True)
+                                try:
+                                    # Attempt to parse and store the JSON data
+                                    file_content = json.dumps(json.load(file), indent=4, sort_keys=True)
+                                except json.JSONDecodeError:
+                                    # If JSON is not formatted correctly, append the file name instead
+                                    contents['files'].append(entry.name)
+                                    continue  # Skip the rest of the loop for this file
                             else:
                                 # Read the content of the file for .txt and .md
                                 file_content = file.read()
-                            # contents['files'].append(file_content)
+
                             contents['text_content'][entry.name] = file_content
                     else:
                         # If the file does not have one of the specified extensions, just append the file name
