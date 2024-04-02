@@ -11,16 +11,16 @@
 {% if empty_directory %}
   <p class="lead">This directory is empty.</p>
 {% else %}
-  <div class="container">
+  <div class="container bg-light">
     <hr>
-    <div class="col-md-12">
+    <div class="col-md-12 bg-light">
       <h2 class="text-center mx-auto lead display-6">Dataset File Explorer</h2>
       <p class="lead">Root Directory: <a href="{% url 'file_explorer' path='' %}">{{ root_dir }}/</a></p>
       <p class="lead">Working Directory: {{ display_path }}</p>
 
       {% if not path %}
         <!-- We are at the root directory, show only top-level directories -->
-        <div class="container mt-4">
+        <div class="container mt-4 bg-light">
           <h2 class="mb-3">Datasets:</h2>
           <p>Note that downloadable CSVs are currently unavailable for datasets that are not BIDS compatible</p>
           <table class="table table-hover">
