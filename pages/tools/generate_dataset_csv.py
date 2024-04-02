@@ -2,6 +2,7 @@ import pandas as pd
 from django.shortcuts import HttpResponse
 from django.db import connection
 import re 
+from accounts.decorators import is_cleared
 
 """
 The goal of this script is to generate a CSV file containing all of the data for a given dataset.
@@ -168,6 +169,7 @@ def get_big_query(dataset_path):
     """
     return big_query
 
+@is_cleared
 def generate_dataset_csv(request, dataset_path):
     """
     Generates a CSV file from the dataset specified by dataset_path.
