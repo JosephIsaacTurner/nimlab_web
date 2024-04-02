@@ -22,38 +22,41 @@
   <!-- Include jQuery UI -->
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+    .custom-nav-link-hover .nav-link:hover {
+      color: #4287f5 !important; /* This is white, so you'd adjust this value to be a slightly brighter shade than your default `text-light` color */
+      transition: color 0.2s; /* Smooth transition for hover effect */
+    }
 
+  </style>
   {% endblock %}
-
   {% block style %}
   {% endblock %}
   {% block header_links %}
   {% endblock %}
 </head>
 
-<body>
-  <header class="p-3 mb-3 border-bottom">
-    <div class="container">
-      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+<body class="bg-light">
+  <header class="p-3 mb-3 border-bottom bg-dark">
+    <div class="container bg-dark">
+      <div class="bg-dark d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-light text-decoration-none">
           <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
             <use xlink:href="#bootstrap" />
           </svg>
         </a>
-
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Home</a></li>
-          <li><a href="{% url 'usage' %}" class="nav-link px-2 link-dark">Usage</a></li>
-          <li><a href="{% url 'file_explorer' path='' %}" class="nav-link px-2 link-dark">File Explorer</a></li>
-          <li><a href="{% url 'search_datasets' %}" class="nav-link px-2 link-dark">Search Datasets</a></li>
-
-
+  
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 custom-nav-link-hover">
+          <li><a id="home" href="{% url 'home' %}" class="nav-link px-2 text-light">Home</a></li>
+          <li><a id = "usage" href="{% url 'usage' %}" class="nav-link px-2 text-light">Usage</a></li>
+          <li><a id="file_explorer" href="{% url 'file_explorer' path='' %}" class="nav-link px-2 text-light">File Explorer</a></li>
+          <li><a id="search_datasets" href="{% url 'search_datasets' %}" class="nav-link px-2 text-light">Search Datasets</a></li>
         </ul>
-
+      
+  
         <div class="dropdown text-end">
           {% if user.is_authenticated %}
-          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false">
+          <a href="#" class="d-block text-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             {{ user.email }}
           </a>
           <ul class="dropdown-menu text-small">
@@ -73,16 +76,17 @@
       </div>
     </div>
   </header>
+  
 
-  <div class="container">
+  <div class="container bg-light">
     {% block content %}
     <p>Default content...</p>
     {% endblock content %}
   </div>
 
-  <footer class="footer">
+  <footer class="footer bg-dark">
     <div class="container">
-      <span class="text-muted"></span>
+      <span class="text-light"></span>
     </div>
   </footer>
 
@@ -96,8 +100,6 @@
   <script src="{% static 'js/base.js' %}"></script>
 
   {% endblock javascript %}
-
-  {% block script %}
   <script>
     $(document).ready(function() {
         // Target the input field by its class or id
@@ -118,9 +120,23 @@
             }
         });
     });
+    function changeButtonTextColor(buttonId, color) {
+        var button = document.getElementById(buttonId);
+        if (button) {
+            // Using setProperty to add !important
+            button.style.setProperty('color', color, 'important');
+            console.log("Button with ID " + buttonId + " found, and text color changed.");
+        } else {
+            console.log("Button with ID " + buttonId + " not found.");
+        }
+    }
+
+
     </script>
-    
-  {% endblock script %}
+
+{% block script %}
+
+{% endblock script %}
 
 </body>
 

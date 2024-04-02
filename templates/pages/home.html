@@ -8,7 +8,30 @@
   <img src="{% static 'images/lab_logo1.png' %}" class="img-fluid" alt="DjangoX logo"/>
   <br>
 </div>
+<div class="col-sm-8 mx-auto">
 <hr>
-<h2 class="text-center mx-auto lead display-6">Database Web Interface for the Center for Brain Circuit Therapeutics</h2>
+<h2 class="text-center mx-auto lead display-6">Database Interface</h2>
+<br>
 
+  <p class="lead">Welcome to the database interface for the Center for Brain Circuit Therapeutics. This interface allows you to search for datasets, view and download files, and more.</p>
+<h4>Pages:</h4>
+<ul>
+  <li><a href="{% url 'usage' %}" class="px-2 link-dark">Usage</a></li>
+  <li><a href="{% url 'file_explorer' path='' %}" class="px-2 link-dark">File Explorer</a></li>
+  <li><a href="{% url 'search_datasets' %}" class="px-2 link-dark">Search Datasets</a></li>
+</ul>
+<br>
+<hr>
+</div>
+<div class="d-flex justify-content-center flex-wrap">
+  <img src="/static/images/Brigham_and_Womens_Hospital_logo.svg.png" class="img-fluid" style="max-height: 80px;">
+  <img src="/static/images/cbct_logo_dark.png" class="img-fluid" style="max-height: 80px;">
+  <img src="/static/images/harvard_med_logo.png" class="img-fluid" style="max-height: 80px;">
+</div>
+<br>
 {% endblock content %}
+{% block script %}
+<script>
+changeButtonTextColor('home', '#2472f0');
+</script>
+{% endblock script %}
