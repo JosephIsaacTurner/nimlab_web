@@ -76,7 +76,7 @@
                             <h6 class="card-subtitle mb-2 text-muted">{{ dataset.dataset_path }}</h6>
                             <p class="card-text">Comments: {{ dataset.comments }}</p>
                             <!-- Updated Explore Files button -->
-                            <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/published_datasets/' %}" class="btn btn-outline-secondary btn-sm me-2">
+                            <a href="{% url 'file_explorer' path=dataset.dataset_path|cut:'/volume1/NIMLAB_DATABASE/published_datasets/'|add:'/' %}" class="btn btn-outline-secondary btn-sm me-2">
                                 <i class="fas fa-folder-open me-2"></i>Explore Files
                             </a>
                             <!-- Updated Download CSV button -->

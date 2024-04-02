@@ -4,12 +4,19 @@ from django.db.models import Q  # This is where you import Q
 from django.db import models
 from pages.models import Dataset, Tag, Author, Contact, CitationSrc, CitationTo
 class DatasetSearchForm(forms.Form):
+
+    doi_string = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'autocomplete': 'off', 'class': 'doi-autocomplete'}),
+        label="DOI"
+    )
     dataset_id = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Dataset Name"
     )
+
     dataset_path = forms.MultipleChoiceField(
         choices=[],  # You can dynamically populate this in the __init__ method
         widget=forms.CheckboxSelectMultiple,
@@ -40,28 +47,38 @@ class DatasetSearchForm(forms.Form):
         super(DatasetSearchForm, self).__init__(*args, **kwargs)
         self.fields['dataset_path'].choices = Dataset.objects.values_list('dataset_path', 'dataset_path').distinct()
 
-
     def search(self):
         datasets = Dataset.objects.all()
+
+        # Filter by DOI string if provided
+        if self.cleaned_data.get('doi_string'):
+            datasets = datasets.filter(doi_string__icontains=self.cleaned_data['doi_string'])
+
         if self.cleaned_data['dataset_path']:
             dataset_paths_query = Q(dataset_path__in=self.cleaned_data['dataset_path'])
             datasets = datasets.filter(dataset_paths_query)
+
         if self.cleaned_data['dataset_id']:
             ids_query = Q(id__in=self.cleaned_data['dataset_id'])
             datasets = datasets.filter(ids_query)
+
         if self.cleaned_data['tag']:
             tag_query = Q()
             for tag in self.cleaned_data['tag']:
                 tag_query |= Q(tags__in=[tag])
             datasets = datasets.filter(tag_query)
+
         if self.cleaned_data['author_email']:
             author_email_query = Q()
             for author_email in self.cleaned_data['author_email']:
                 author_email_query |= Q(authors__in=[author_email])
             datasets = datasets.filter(author_email_query)
+
         if self.cleaned_data['contact_email']:
             contact_email_query = Q()
             for contact_email in self.cleaned_data['contact_email']:
                 contact_email_query |= Q(contacts__in=[contact_email])
             datasets = datasets.filter(contact_email_query)
+
         return datasets.distinct()
+

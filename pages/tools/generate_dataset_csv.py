@@ -3,23 +3,22 @@ from django.shortcuts import HttpResponse
 from django.db import connection
 import re 
 
-"""The goal of this script is to generate a CSV file containing all of the data for a given dataset
-The CSV file will have one row per subject and one column per data file
-To do this in a way that is robust across all datasets,
-We need to account for every possible combination of coordinate_system, hemisphere, statistic, and connectome
-This is done by dynamically generating the SQL query
-We start by fetching all of the unique combinations of coordinate_system, hemisphere, statistic, and connectome
-Then we build a CTE (common table expression) for each combination
-Each CTE contains the file_path and subject_id for all subjects that have that combination of coordinate_system, hemisphere, statistic, and connectome
-We then build the final query by joining all of the CTEs together
-The final query will have one row per subject and one column per file_path
-The file_path columns will be named according to the coordinate_system, hemisphere, statistic, and connectome
-The file_path columns will contain the full path to the file on the server
-The final query will be executed and all null columns will be dropped (Combinations of coordinate_system, hemisphere, statistic, and connectome that didn't exist in that dataset will be dropped)
-The results will be converted to a CSV file and returned to the user
+"""
+The goal of this script is to generate a CSV file containing all of the data for a given dataset.
+The CSV file will have one row per subject and one column per data file.
+This involves dynamically generating an SQL query to account for every possible combination of
+coordinate_system, hemisphere, statistic, and connectome, by fetching all unique combinations and
+building a CTE for each, then joining these together. The results are converted to a CSV file and returned.
 """
 
 def get_big_query(dataset_path):
+    """
+    Constructs a complex SQL query to fetch data based on unique combinations of dataset attributes.
+
+    :param dataset_path: The path of the dataset to query.
+    :return: A string representing a SQL query that can be executed to fetch the desired data.
+    """
+
     unique_stat_combinations = f"""
     SELECT DISTINCT statistic, coordinate_system, hemisphere, connectome
     FROM data_archives
@@ -141,12 +140,21 @@ def get_big_query(dataset_path):
     # Build the select statements without the final comma and trailing whitespace
     select_combined = "".join(roi_selects) + "".join(stat_selects)
     select_combined = remove_trailing_comma_and_whitespace(select_combined)
-    # Combine everything into the final big query
+        # Combine the roi_wheres and stat_wheres lists and filter out any empty strings
+    combined_wheres = list(filter(None, roi_wheres + stat_wheres))
+
+    # Join the combined list with ' OR ', ensuring no leading or trailing 'OR' operators
+    where_clause = " OR ".join(combined_wheres)
+
+    # Use the where_clause in the SQL query, ensuring it's only included if not empty
+    where_clause_sql = f"WHERE {where_clause}" if where_clause else ""
+
+    # Then, incorporate this into the final SQL statement construction
     big_query = f"""
     WITH dataset_path_cte AS (
         SELECT id
         FROM datasets
-        WHERE dataset_path = '$$dataset_path$$'
+        WHERE dataset_path = '{dataset_path}'
     ),
     {cte_combined}
     SELECT * FROM (
@@ -155,19 +163,24 @@ def get_big_query(dataset_path):
             {select_combined}
         FROM subjects s
         {"".join(roi_joins)}{"".join(stat_joins)}
-        WHERE {" OR ".join(roi_wheres)} OR {" OR ".join(stat_wheres)}
+        {where_clause_sql}
     ) as sub_q_1;
     """
     return big_query
 
 def generate_dataset_csv(request, dataset_path):
+    """
+    Generates a CSV file from the dataset specified by dataset_path.
+
+    :param request: The HTTP request object.
+    :param dataset_path: The path of the dataset to generate the CSV for.
+    :return: A HttpResponse object containing the CSV data or an error message.
+    """
     if dataset_path == '':
         return HttpResponse('Dataset path not specified', status=400)
-    # Replace the placeholder with the actual dataset path in the SQL query
+    
     big_query = get_big_query(dataset_path)
     formatted_query = big_query.replace('$$dataset_path$$', dataset_path)
-    # return HttpResponse(formatted_query, content_type='text/plain', status=200)
-    # Execute the query and fetch data
     
     try:
         with connection.cursor() as cursor:
@@ -178,24 +191,16 @@ def generate_dataset_csv(request, dataset_path):
     except Exception as e:
         return HttpResponse(f"Error executing query: {str(e)}\nQuery: {formatted_query}", status=500)
 
-
-    # Exclude columns that are entirely Null/None
     df = df.dropna(axis='columns', how='all')
     
-    # Concatenate '/data/nimlab/dl_archive/NIMLAB_DATABASE' to all columns except 'subject_name'
-    prefix = '/data/nimlab/NIMLAB_DATABASE'
+    prefix = ''
     for column in df.columns:
         if column != 'subject_name':
             df[column] = df[column].apply(lambda x: f'{prefix}{x}' if pd.notnull(x) else x)
 
-    # Convert DataFrame to CSV
     response = HttpResponse(content_type='text/csv')
     dataset_name = dataset_path.replace("/published_datasets/", "")
     response['Content-Disposition'] = f'attachment; filename="{dataset_name}_dataset.csv"'
 
-    # Write the CSV data to the response object
     df.to_csv(path_or_buf=response, index=False)
-    # return HttpResponse(formatted_query, content_type='text/plain', status=200)
     return response
-
-

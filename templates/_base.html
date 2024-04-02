@@ -17,6 +17,12 @@
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Include jQuery UI -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
   {% endblock %}
 
   {% block style %}
@@ -92,6 +98,28 @@
   {% endblock javascript %}
 
   {% block script %}
+  <script>
+    $(document).ready(function() {
+        // Target the input field by its class or id
+        $(".doi-autocomplete").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "{% url 'doi-suggestions' %}",
+                    data: { term: request.term },
+                    dataType: "json",
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2, // Start after typing two characters
+            select: function(event, ui) {
+                $(this).val(ui.item.value); // Update the value in the input field
+            }
+        });
+    });
+    </script>
+    
   {% endblock script %}
 
 </body>

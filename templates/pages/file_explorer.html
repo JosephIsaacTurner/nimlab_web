@@ -33,15 +33,15 @@
             <tbody>
               {% for directory, info in directory_info.items %}
               <tr>
-                <td>{{ info.dataset_name }}/</td>
+                <td>{{ info.dataset_name}} ({{info.path_in_drive}})/</td>
                 <td>
                   <!-- Explore Files Button -->
-                  <a href="{% url 'file_explorer' path=info.dataset_name|add:'/' %}" class="btn btn-outline-secondary btn-sm me-2">
+                  <a href="{% url 'file_explorer' path=info.path_in_drive|add:'/' %}" class="btn btn-outline-secondary btn-sm me-2">
                     <i class="fas fa-folder-open me-2"></i>Explore Files
                   </a>
                   <!-- Download CSV Button -->
                   {% if info.in_database %}
-                  <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:info.dataset_name %}" class="btn btn-outline-primary btn-sm">
+                  <a href="{% url 'generate_csv' dataset_path=info.path_in_db %}" class="btn btn-outline-primary btn-sm">
                     <i class="fas fa-download me-2"></i>Download CSV
                   </a>
                   {% endif %}
@@ -57,7 +57,7 @@
 
         {% if download_csv %}
           {% with clean_path=display_path|slice:":-1" %}
-          <a href="{% url 'generate_csv' dataset_path='/published_datasets/'|add:clean_path %}" class="btn btn-outline-primary btn-sm">
+          <a href="{% url 'generate_csv' dataset_path=dataset_path_in_db %}" class="btn btn-outline-primary btn-sm">
             <i class="fas fa-download me-2"></i>Download Dataset CSV
           </a>
           {% endwith %}

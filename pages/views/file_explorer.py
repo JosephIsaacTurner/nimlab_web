@@ -6,6 +6,8 @@ from django.db.models import Q
 from pages.models import Dataset
 import markdown
 import json
+from django.db import connection
+from django.contrib.auth.decorators import login_required
 
 # def file_explorer(request, path=''):
     # This function is used to view files in the browser
@@ -45,6 +47,14 @@ import json
     # │   │   │       └── sub01_LesionMask.json
     # │   │   └── sub02/
     # │   │       (and so on for other subdirectories and files)
+
+def is_file(path):
+    """Check if the path is a file."""
+    return os.path.isfile(path)
+
+def check_path_exists(path):
+    """Check if the given path exists."""
+    return os.path.exists(path)
 
 def get_directory_contents(path):
     # This recursive helper function fetches contents of the given directory, excluding dotfiles/directories
@@ -86,88 +96,113 @@ def get_directory_contents(path):
         pass
     return contents
 
-from django.contrib.auth.decorators import login_required
+def list_directories(base_path, exclude_hidden=True, excluded_substrings=None):
+    """List directories in the base path, optionally excluding hidden and specified directories."""
+    if excluded_substrings is None:
+        excluded_substrings = []
+    directories = [
+        d for d in os.listdir(base_path)
+        if os.path.isdir(os.path.join(base_path, d))
+        and (not exclude_hidden or not d.startswith('.'))
+        and all(substring.lower() not in d.lower() for substring in excluded_substrings)
+    ]
+    return directories
+
+def directory_in_database(path):
+    """
+    Check if the directory is represented in the database, case-insensitively,
+    and return a tuple of a boolean indicating if a match is found and the actual
+    dataset_path from the database if a match is found.
+    """
+    # Extract the last part of the path to use in comparisons
+    if path:
+        path = os.path.normpath(path)
+        path = os.path.basename(path)
+    
+    prefixes = [
+        '/volume1/NIMLAB_DATABASE/published_datasets/',
+        '/volume1/NIMLAB_DATABASE/control_datasets/'
+    ]
+
+    test_paths = [prefix + path for prefix in prefixes]
+
+    # Craft the SQL query, using placeholders for parameters
+    sql = """
+    SELECT
+        dataset_path, dataset_name
+    FROM 
+        datasets
+    WHERE
+        LOWER(dataset_path) = LOWER(%s)
+        OR
+        LOWER(dataset_path) = LOWER(%s)
+    LIMIT 1;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql, [test_paths[0], test_paths[1]])
+        query_result = cursor.fetchone()
+
+    if query_result:
+        return True, query_result[0], query_result[1]
+    else:
+        return False, None, None
+
+def get_directory_info(directory, path):
+    """
+    Get information about the directory to display, utilizing the directory_in_database
+    function to check for the directory's presence in the database in a case-insensitive manner.
+    """
+    # Prepare the full directory path for case-insensitive comparison
+    full_directory_path = os.path.join(path, directory).strip("/")
+
+    # Check for the directory's presence in the database case-insensitively
+    in_database, dataset_path, dataset_name = directory_in_database(full_directory_path)
+
+    if not in_database:
+        dataset_name = directory
+        dataset_path = full_directory_path
+
+    return {
+        'dataset_name': dataset_name,
+        'path_in_drive': full_directory_path,
+        'path_in_db': dataset_path if in_database else '',
+        'in_database': in_database
+    }
 
 @login_required
 def file_explorer(request, path=''):
+    """View function to explore files and directories."""
     root_dir = 'published_datasets'
     base_dir = os.path.join(settings.MEDIA_ROOT, root_dir)
-
-    # Full path to the directory or file
     full_path = os.path.join(base_dir, path)
 
-    # Check if the path actually exists
-    if not os.path.exists(full_path):
-        context = {
+    if not check_path_exists(full_path):
+        return render(request, 'pages/file_explorer.html', {
             'display_path': path if path else root_dir,
             'path': path, 'empty_directory': True,
             'root_dir': root_dir
-        }
-        return render(request, 'pages/file_explorer.html', context)
+        })
 
-    # Check if the path is a file
-    if os.path.isfile(full_path):
+    if is_file(full_path):
         return FileResponse(open(full_path, 'rb'))
 
-    # Decide what to display based on whether we're at the root directory
+    contents = {'files': [], 'directories': {}}
     if not path:
-        # At the root, list only non-hidden subdirectories
-        excluded_substrings = ["grafman", "mgh", "trash"]
-        directories = [
-            d for d in os.listdir(full_path) 
-            if os.path.isdir(os.path.join(full_path, d)) 
-            and not d.startswith('.')
-            and all(substring.lower() not in d.lower() for substring in excluded_substrings)
-        ]
-        contents = {'files': [], 'directories': {d: {} for d in directories}}
+        directories = list_directories(full_path, excluded_substrings=["grafman", "mgh", "trash"])
+        contents['directories'] = {d: {} for d in directories}
     else:
-        # Not at the root, recursively list all contents
         contents = get_directory_contents(full_path)
 
-    empty_directory = not contents['files'] and not any(contents['directories'])
-    if path:
-        path = path.rstrip('/ ').rstrip() + '/'
-
-    # Sort the 'files' and 'directories' arrays alphabetically
-    # sorted_files = sorted(contents['files'])
-    sorted_directories = sorted(contents['directories'])
-    directory_info = {}
-    if not path:
-        # Create a dictionary with directory names as keys and another dictionary with dataset_name and in_database as values
-        for directory in sorted_directories:
-            # Construct the full path to match with dataset_path in the database
-            full_directory_path = os.path.join(path, directory) if path else directory
-            # Query the database to check if the directory corresponds to a dataset_path
-            test_path = "/published_datasets/" + full_directory_path
-            in_database = Dataset.objects.filter(dataset_path=test_path).exists()
-            # Get the dataset name if in the database, else use the directory name
-            dataset_name = Dataset.objects.get(dataset_path=test_path).dataset_path.replace("/published_datasets/","") if in_database else directory
-            
-            # Update the directory info dictionary
-            directory_info[directory] = {
-                'dataset_name': dataset_name,
-                'in_database': in_database
-            }
-        download_csv = False
-    else:
-        test_path = "/published_datasets/" + path.replace("/","").replace("/","")
-        if Dataset.objects.filter(dataset_path=test_path).exists():
-            download_csv = True
-        else:
-            download_csv = False
-
-    # sorted_contents = {
-    #     'files': sorted_files,
-    #     'directories': sorted_directories
-    # }
-
+    directory_info = {d: get_directory_info(d, path) for d in contents['directories']}
 
     context = {
-        'download_csv': download_csv,
+        'download_csv': directory_in_database(path)[0],
+        'dataset_path_in_db': directory_in_database(path)[1],
         'display_path': path if path else root_dir,
         'path': path,
         'contents': contents,
-        'empty_directory': empty_directory,
+        'empty_directory': not contents['files'] and not any(contents['directories']),
         'root_dir': root_dir,
         'directory_info': directory_info
     }
